@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IB AI Archipelago</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5f6c7b;
+      --paper: #fffaf0;
+      --line: rgba(23, 32, 51, 0.18);
+      --sea-a: #80d8cb;
+      --sea-b: #5caecf;
+      --sea-c: #416fbc;
+      --cream: #fff8dc;
+      --gold: #f3c35b;
+      --coral: #ef7e6b;
+      --leaf: #65ad70;
+      --mint: #75cbb7;
+      --violet: #9f8ad9;
+      --sky: #7fc0e6;
+      --rose: #ef9fac;
+      --shadow: 0 18px 40px rgba(22, 37, 64, 0.22);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f6f1df;
+    }
+
+    button,
+    input,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(255, 248, 220, 0.92), rgba(255, 248, 220, 0.42) 14%, rgba(255, 248, 220, 0) 28%),
+        linear-gradient(135deg, var(--sea-a), var(--sea-b) 48%, var(--sea-c));
+      overflow: hidden;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px clamp(18px, 4vw, 46px);
+      background: rgba(255, 250, 240, 0.88);
+      border-bottom: 1px solid rgba(23, 32, 51, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 2.8vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 0.94rem;
+      max-width: 36rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-button,
+    .launch,
+    .complete-button,
+    .reset-button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .control-button:hover,
+    .launch:hover,
+    .complete-button:hover,
+    .reset-button:hover {
+      transform: translateY(-1px);
+      background: #ffffff;
+      border-color: rgba(23, 32, 51, 0.32);
+    }
+
+    .control-button.active {
+      background: #172033;
+      color: #fffaf0;
+      border-color: #172033;
+    }
+
+    .search {
+      width: min(230px, 100%);
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: #172033;
+      box-shadow: 0 0 0 3px rgba(23, 32, 51, 0.14);
+    }
+
+    .voyage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(310px, 380px);
+      min-height: calc(100vh - 80px);
+      position: relative;
+    }
+
+    .map {
+      position: relative;
+      min-height: 760px;
+      overflow: hidden;
+      border-right: 1px solid rgba(255, 250, 240, 0.42);
+      background:
+        repeating-linear-gradient(-18deg, rgba(255, 255, 255, 0.12) 0 2px, transparent 2px 34px),
+        repeating-linear-gradient(17deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 28px);
+    }
+
+    .map::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 24%, rgba(255, 255, 255, 0.1) 62%, transparent),
+        linear-gradient(180deg, rgba(255, 250, 240, 0.28), transparent 32%, rgba(20, 67, 102, 0.2));
+      pointer-events: none;
+    }
+
+    .routes {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.76;
+    }
+
+    .route {
+      fill: none;
+      stroke: rgba(255, 250, 240, 0.82);
+      stroke-width: 0.45;
+      stroke-linecap: round;
+      stroke-dasharray: 1.1 1.35;
+      filter: drop-shadow(0 2px 4px rgba(23, 32, 51, 0.25));
+    }
+
+    .map-label {
+      position: absolute;
+      z-index: 2;
+      padding: 8px 12px;
+      border: 1px solid rgba(255, 250, 240, 0.55);
+      border-radius: 999px;
+      background: rgba(23, 32, 51, 0.55);
+      color: #fffaf0;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      box-shadow: var(--shadow);
+    }
+
+    .label-number {
+      left: 8%;
+      top: 6%;
+    }
+
+    .label-geometry {
+      right: 8%;
+      top: 18%;
+    }
+
+    .label-stats {
+      left: 10%;
+      bottom: 28%;
+    }
+
+    .label-calculus {
+      right: 9%;
+      bottom: 13%;
+    }
+
+    .island-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+    }
+
+    .island {
+      --island: var(--gold);
+      --trim: rgba(23, 32, 51, 0.45);
+      position: absolute;
+      left: calc(var(--x) * 1%);
+      top: calc(var(--y) * 1%);
+      transform: translate(-50%, -50%);
+      width: clamp(126px, 12.5vw, 172px);
+      min-height: 86px;
+      border: 2px solid rgba(255, 250, 240, 0.86);
+      border-radius: 48% 52% 42% 58% / 48% 45% 55% 52%;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0)),
+        var(--island);
+      color: #172033;
+      box-shadow:
+        inset 0 -10px 0 rgba(23, 32, 51, 0.1),
+        0 18px 30px rgba(19, 48, 85, 0.28);
+      cursor: pointer;
+      padding: 15px 13px 13px;
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      text-align: center;
+      transition: transform 180ms ease, box-shadow 180ms ease, opacity 160ms ease;
+    }
+
+    .island::after {
+      content: "";
+      position: absolute;
+      left: 20%;
+      right: 20%;
+      bottom: -8px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(12, 56, 92, 0.24);
+      filter: blur(2px);
+      z-index: -1;
+    }
+
+    .math-icon {
+      color: #172033;
+      overflow: visible;
+    }
+
+    .island > .math-icon {
+      position: absolute;
+      left: 50%;
+      top: -28px;
+      width: 64px;
+      height: 46px;
+      padding: 6px;
+      border: 1px solid rgba(255, 250, 240, 0.78);
+      border-radius: 18px;
+      background: rgba(255, 250, 240, 0.82);
+      box-shadow: 0 10px 20px rgba(19, 48, 85, 0.18);
+      transform: translateX(-50%);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .island:hover > .math-icon,
+    .island.selected > .math-icon {
+      transform: translateX(-50%) translateY(-3px) rotate(-2deg);
+      background: #fffaf0;
+    }
+
+    .island:hover,
+    .island.selected {
+      transform: translate(-50%, -53%) scale(1.04);
+      box-shadow:
+        inset 0 -10px 0 rgba(23, 32, 51, 0.1),
+        0 22px 42px rgba(19, 48, 85, 0.36);
+    }
+
+    .island.selected {
+      outline: 4px solid rgba(255, 250, 240, 0.7);
+    }
+
+    .island.complete {
+      border-color: #172033;
+    }
+
+    .island.hidden,
+    .log-item.hidden {
+      display: none;
+    }
+
+    .point {
+      font-size: 0.72rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+      color: rgba(23, 32, 51, 0.72);
+    }
+
+    .island-title {
+      font-size: clamp(0.78rem, 1vw, 0.92rem);
+      line-height: 1.12;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .level {
+      justify-self: center;
+      width: max-content;
+      max-width: 100%;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 250, 240, 0.7);
+      font-size: 0.66rem;
+      font-weight: 950;
+      border: 1px solid rgba(23, 32, 51, 0.14);
+    }
+
+    .panel {
+      position: relative;
+      z-index: 10;
+      padding: 22px;
+      background: rgba(255, 250, 240, 0.9);
+      backdrop-filter: blur(18px);
+      border-left: 1px solid rgba(255, 255, 255, 0.48);
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+
+    .progress {
+      display: grid;
+      gap: 9px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-weight: 950;
+    }
+
+    .meter {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(23, 32, 51, 0.12);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--leaf), var(--gold), var(--coral));
+      transition: width 220ms ease;
+    }
+
+    .selected-panel {
+      display: grid;
+      gap: 14px;
+      padding-top: 4px;
+    }
+
+    .selected-panel h2 {
+      margin: 0;
+      font-size: clamp(1.55rem, 2.2vw, 2.25rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .selected-graphic {
+      min-height: 162px;
+      border: 1px solid rgba(23, 32, 51, 0.13);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 240, 0.48)),
+        radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.95), transparent 25%),
+        var(--selected-color, #f3c35b);
+      box-shadow: inset 0 -18px 30px rgba(23, 32, 51, 0.08);
+    }
+
+    .selected-graphic .math-icon {
+      width: min(280px, 84%);
+      height: 142px;
+      filter: drop-shadow(0 8px 10px rgba(23, 32, 51, 0.18));
+    }
+
+    .selected-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(255, 255, 255, 0.68);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .blurb {
+      color: #344254;
+      font-size: 1rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .launch {
+      background: #172033;
+      color: #fffaf0;
+      border-color: #172033;
+    }
+
+    .complete-button.done {
+      background: #dff3d7;
+      border-color: #84b974;
+    }
+
+    .file-name {
+      border-top: 1px solid rgba(23, 32, 51, 0.12);
+      padding-top: 12px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .legend {
+      display: grid;
+      gap: 10px;
+      border-top: 1px solid rgba(23, 32, 51, 0.12);
+      padding-top: 16px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 9px;
+      align-items: center;
+      color: #344254;
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(23, 32, 51, 0.18);
+    }
+
+    .log {
+      position: relative;
+      z-index: 8;
+      padding: clamp(26px, 5vw, 54px);
+      background: #fffaf0;
+    }
+
+    .log-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .log h2 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.4vw, 2.3rem);
+      letter-spacing: 0;
+    }
+
+    .log-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .log-item {
+      min-height: 158px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #ffffff;
+      display: grid;
+      gap: 9px;
+      align-content: start;
+      overflow: hidden;
+    }
+
+    .log-item .math-icon {
+      width: 76px;
+      height: 52px;
+      justify-self: start;
+      padding: 5px;
+      border: 1px solid rgba(23, 32, 51, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 250, 240, 0.74);
+    }
+
+    .log-item strong {
+      line-height: 1.12;
+      overflow-wrap: anywhere;
+    }
+
+    .log-item span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .log-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-link {
+      color: #172033;
+      font-weight: 900;
+      text-decoration: none;
+      border-bottom: 2px solid currentColor;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef7f0;
+      color: #2d6d38;
+      font-size: 0.72rem;
+      font-weight: 950;
+      border: 1px solid #b8d9bd;
+    }
+
+    @media (max-width: 1020px) {
+      .topbar,
+      .voyage {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+
+      .map {
+        min-height: 720px;
+        border-right: 0;
+      }
+
+      .panel {
+        border-left: 0;
+        border-top: 1px solid rgba(23, 32, 51, 0.12);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        padding: 14px;
+      }
+
+      .brand {
+        display: grid;
+        gap: 7px;
+      }
+
+      .map {
+        min-height: 1740px;
+      }
+
+      .routes {
+        display: none;
+      }
+
+      .island {
+        left: calc(var(--mx) * 1%);
+        top: calc(var(--my) * 1%);
+        width: clamp(118px, 38vw, 150px);
+        min-height: 82px;
+      }
+
+      .island > .math-icon {
+        width: 54px;
+        height: 40px;
+        top: -24px;
+      }
+
+      .map-label {
+        display: none;
+      }
+
+      .panel {
+        padding: 18px 14px;
+      }
+
+      .log {
+        padding: 28px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>IB AI Archipelago</h1>
+        <div class="tagline">A syllabus map for 24 interactive applets.</div>
+      </div>
+      <div class="controls" aria-label="Map filters">
+        <input class="search" id="search" type="search" placeholder="Search syllabus">
+        <button class="control-button active" type="button" data-filter="all">All</button>
+        <button class="control-button" type="button" data-filter="sl">SL</button>
+        <button class="control-button" type="button" data-filter="ahl">AHL</button>
+        <button class="control-button" type="button" data-filter="1">Topic 1</button>
+        <button class="control-button" type="button" data-filter="3">Topic 3</button>
+        <button class="control-button" type="button" data-filter="4">Topic 4</button>
+        <button class="control-button" type="button" data-filter="5">Topic 5</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="voyage" aria-label="Syllabus island map">
+        <div class="map" id="map">
+          <svg class="routes" id="routes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="map-label label-number">Topic 1: Number and algebra</div>
+          <div class="map-label label-geometry">Topic 3: Geometry and trigonometry</div>
+          <div class="map-label label-stats">Topic 4: Statistics and probability</div>
+          <div class="map-label label-calculus">Topic 5: Calculus</div>
+          <div class="island-layer" id="islandLayer"></div>
+        </div>
+
+        <aside class="panel" aria-label="Selected syllabus island">
+          <div class="progress">
+            <div class="progress-head">
+              <span id="progressText">0 of 24 complete</span>
+              <button class="reset-button" type="button" id="resetProgress">Reset</button>
+            </div>
+            <div class="meter" aria-hidden="true"><div class="meter-fill" id="meterFill"></div></div>
+          </div>
+
+          <div class="selected-panel" id="selectedPanel"></div>
+
+          <div class="legend">
+            <div class="legend-row"><span class="dot" style="background:#f3c35b"></span><span>Number and algebra</span></div>
+            <div class="legend-row"><span class="dot" style="background:#75cbb7"></span><span>Geometry and trigonometry</span></div>
+            <div class="legend-row"><span class="dot" style="background:#ef9fac"></span><span>Statistics and probability</span></div>
+            <div class="legend-row"><span class="dot" style="background:#9f8ad9"></span><span>Calculus</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="log" aria-label="Voyage log">
+        <div class="log-head">
+          <h2>Voyage Log</h2>
+          <span class="tagline" id="visibleCount"></span>
+        </div>
+        <div class="log-grid" id="logGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const islands = [
+      {
+        id: "arithmetic",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL",
+        points: "SL 1.2",
+        title: "Arithmetic sequences and series",
+        blurb: "Patterns, nth terms, sigma notation, sums and simple-interest models.",
+        href: "sl-1-02-arithmetic-sequences-series.html",
+        color: "#f3c35b",
+        x: 15,
+        y: 16
+      },
+      {
+        id: "geometric",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL + AHL",
+        points: "SL 1.3 / AHL 1.11",
+        title: "Geometric sequences and series",
+        blurb: "Finite geometric models, compound growth and sums to infinity.",
+        href: "sl-1-03-ahl-1-11-geometric-sequences-series.html",
+        color: "#f0a757",
+        x: 30,
+        y: 13
+      },
+      {
+        id: "finance",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL",
+        points: "SL 1.4 / SL 1.7",
+        title: "Financial mathematics",
+        blurb: "Compound interest, depreciation, annuities, loans and amortization.",
+        href: "sl-1-04-sl-1-07-financial-mathematics.html",
+        color: "#86bd62",
+        x: 46,
+        y: 17
+      },
+      {
+        id: "exponents",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL + AHL",
+        points: "SL 1.5 / AHL 1.10",
+        title: "Exponents and logarithms",
+        blurb: "Laws of exponents, logarithms and rational exponent extensions.",
+        href: "sl-1-05-ahl-1-10-exponents-logarithms.html",
+        color: "#68bfd5",
+        x: 63,
+        y: 14
+      },
+      {
+        id: "accuracy",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL",
+        points: "SL 1.6",
+        title: "Accuracy and error",
+        blurb: "Approximation, bounds, percentage error and trustworthy numbers.",
+        href: "sl-1-06-accuracy-approximation-error.html",
+        color: "#ef7e6b",
+        x: 79,
+        y: 19
+      },
+      {
+        id: "complex",
+        topic: "1",
+        group: "Number and algebra",
+        level: "AHL",
+        points: "AHL 1.12 / AHL 1.13",
+        title: "Complex numbers",
+        blurb: "Cartesian, polar and exponential forms, operations and Argand diagrams.",
+        href: "ahl-1-12-ahl-1-13-complex-numbers.html",
+        color: "#9f8ad9",
+        x: 20,
+        y: 30
+      },
+      {
+        id: "matrices",
+        topic: "1",
+        group: "Number and algebra",
+        level: "AHL",
+        points: "AHL 1.14",
+        title: "Matrices",
+        blurb: "Matrix algebra, determinants, inverses, systems, coding and decoding.",
+        href: "ahl-1-14-matrices.html",
+        color: "#75cbb7",
+        x: 38,
+        y: 31
+      },
+      {
+        id: "eigen",
+        topic: "1",
+        group: "Number and algebra",
+        level: "AHL",
+        points: "AHL 1.15",
+        title: "Eigenvalues and eigenvectors",
+        blurb: "Characteristic polynomials, eigenvectors and matrix powers.",
+        href: "ahl-1-15-eigenvalues-eigenvectors.html",
+        color: "#f2d36f",
+        x: 56,
+        y: 30
+      },
+      {
+        id: "diagonalisation",
+        topic: "1",
+        group: "Number and algebra",
+        level: "AHL",
+        points: "AHL 1.15",
+        title: "Matrix diagonalisation",
+        blurb: "Diagonalisation, geometry and repeated transformations.",
+        href: "ahl-1-15-matrix-diagonalisation.html",
+        color: "#d596c6",
+        x: 74,
+        y: 33
+      },
+      {
+        id: "trig",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "SL",
+        points: "SL 3.2",
+        title: "Triangle trigonometry",
+        blurb: "Sine rule, cosine rule, right triangles and area of a triangle.",
+        href: "sl-3-02-triangle-trigonometry.html",
+        color: "#75cbb7",
+        x: 18,
+        y: 47
+      },
+      {
+        id: "voronoi",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "SL",
+        points: "SL 3.6",
+        title: "Voronoi diagrams",
+        blurb: "Sites, cells, nearest neighbours, toxic waste and interpolation.",
+        href: "sl-3-06-voronoi-diagrams.html",
+        color: "#84c38d",
+        x: 34,
+        y: 45
+      },
+      {
+        id: "affine",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.9",
+        title: "Affine transformations",
+        blurb: "Matrix transformations, translations, compositions, determinants and fractals.",
+        href: "ahl-3-09-affine-transformations.html",
+        color: "#efb163",
+        x: 52,
+        y: 46
+      },
+      {
+        id: "vectors",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.10-3.13",
+        title: "Vectors",
+        blurb: "Vector basics, lines, kinematics, scalar products and vector products.",
+        href: "ahl-3-10-ahl-3-13-vectors.html",
+        color: "#7fc0e6",
+        x: 70,
+        y: 45
+      },
+      {
+        id: "graph-basics",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.14",
+        title: "Graph theory basics",
+        blurb: "Vertices, edges, degree, connectedness, directed graphs, subgraphs and trees.",
+        href: "ahl-3-14-graph-theory-basics.html",
+        color: "#f3c35b",
+        x: 84,
+        y: 51
+      },
+      {
+        id: "walks",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.15",
+        title: "Adjacency matrices and walks",
+        blurb: "Adjacency matrices, k-length walks, weighted tables and transition matrices.",
+        href: "ahl-3-15-adjacency-matrices-walks.html",
+        color: "#d596c6",
+        x: 29,
+        y: 61
+      },
+      {
+        id: "graph-structure",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.16",
+        title: "Graph structure algorithms",
+        blurb: "Trails, paths, circuits, cycles, Eulerian tests, Hamiltonian tests and MSTs.",
+        href: "ahl-3-16-graph-structure-algorithms.html",
+        color: "#86bd62",
+        x: 49,
+        y: 61
+      },
+      {
+        id: "routes",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "AHL",
+        points: "AHL 3.16",
+        title: "Route optimisation",
+        blurb: "Chinese postman, travelling salesman, upper bounds and lower bounds.",
+        href: "ahl-3-16-route-optimisation.html",
+        color: "#ef7e6b",
+        x: 69,
+        y: 62
+      },
+      {
+        id: "hypothesis",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "SL + AHL",
+        points: "SL 4.11 / AHL 4.18",
+        title: "Hypothesis testing",
+        blurb: "Chi-square tests, t-tests, critical regions, p-values and Type I/II errors.",
+        href: "sl-4-11-ahl-4-18-hypothesis-testing.html",
+        color: "#ef9fac",
+        x: 22,
+        y: 76
+      },
+      {
+        id: "confidence",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "AHL",
+        points: "AHL 4.16",
+        title: "Confidence intervals",
+        blurb: "Normal means, t intervals, interpretation and exam-ready conclusions.",
+        href: "ahl-4-16-confidence-intervals.html",
+        color: "#f0a757",
+        x: 42,
+        y: 75
+      },
+      {
+        id: "markov",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "AHL",
+        points: "AHL 4.19",
+        title: "Markov chains",
+        blurb: "Transition matrices, state vectors, repeated powers and steady states.",
+        href: "ahl-4-19-markov-chains.html",
+        color: "#9f8ad9",
+        x: 62,
+        y: 76
+      },
+      {
+        id: "integration",
+        topic: "5",
+        group: "Calculus",
+        level: "SL",
+        points: "SL 5.5 / SL 5.8",
+        title: "Integration and trapezoidal rule",
+        blurb: "Anti-differentiation, definite integrals, area and numerical approximation.",
+        href: "sl-5-05-sl-5-08-integration-trapezoidal-rule.html",
+        color: "#9f8ad9",
+        x: 29,
+        y: 90
+      },
+      {
+        id: "slope-euler",
+        topic: "5",
+        group: "Calculus",
+        level: "AHL",
+        points: "AHL 5.15 / AHL 5.16",
+        title: "Slope fields and Euler's method",
+        blurb: "Slope fields, solution curves, Euler tables, step size and approximation error.",
+        href: "ahl-5-15-ahl-5-16-slope-fields-euler-method.html",
+        color: "#75cbb7",
+        x: 50,
+        y: 88
+      },
+      {
+        id: "phase-portraits",
+        topic: "5",
+        group: "Calculus",
+        level: "AHL",
+        points: "AHL 5.17",
+        title: "Coupled differential equations",
+        blurb: "Phase portraits, equilibrium points, stability and coupled linear systems.",
+        href: "ahl-5-17-coupled-differential-equations-phase-portraits.html",
+        color: "#7fc0e6",
+        x: 69,
+        y: 88
+      },
+      {
+        id: "second-order",
+        topic: "5",
+        group: "Calculus",
+        level: "AHL",
+        points: "AHL 5.18",
+        title: "Second-order differential equations",
+        blurb: "Second-order systems, Euler solutions and exact solution comparisons.",
+        href: "ahl-5-18-second-order-differential-equations.html",
+        color: "#ef7e6b",
+        x: 86,
+        y: 82
+      }
+    ];
+
+    const routeOrder = {
+      "1": ["arithmetic", "geometric", "finance", "exponents", "accuracy", "complex", "matrices", "eigen", "diagonalisation"],
+      "3": ["trig", "voronoi", "affine", "vectors", "graph-basics", "walks", "graph-structure", "routes"],
+      "4": ["hypothesis", "confidence", "markov"],
+      "5": ["integration", "slope-euler", "phase-portraits", "second-order"]
+    };
+
+    const mobileLayout = {
+      arithmetic: [27, 5],
+      geometric: [73, 5],
+      finance: [27, 12.8],
+      exponents: [73, 12.8],
+      accuracy: [27, 20.6],
+      complex: [73, 20.6],
+      matrices: [27, 28.4],
+      eigen: [73, 28.4],
+      diagonalisation: [27, 36.2],
+      trig: [73, 36.2],
+      voronoi: [27, 44],
+      affine: [73, 44],
+      vectors: [27, 51.8],
+      "graph-basics": [73, 51.8],
+      walks: [27, 59.6],
+      "graph-structure": [73, 59.6],
+      routes: [27, 67.4],
+      hypothesis: [73, 67.4],
+      confidence: [27, 75.2],
+      markov: [73, 75.2],
+      integration: [27, 83],
+      "slope-euler": [73, 83],
+      "phase-portraits": [27, 90.8],
+      "second-order": [73, 90.8]
+    };
+
+    const progressKey = "ib-ai-archipelago-progress";
+    const islandLayer = document.querySelector("#islandLayer");
+    const routesSvg = document.querySelector("#routes");
+    const selectedPanel = document.querySelector("#selectedPanel");
+    const logGrid = document.querySelector("#logGrid");
+    const search = document.querySelector("#search");
+    const filterButtons = [...document.querySelectorAll("[data-filter]")];
+    const progressText = document.querySelector("#progressText");
+    const meterFill = document.querySelector("#meterFill");
+    const visibleCount = document.querySelector("#visibleCount");
+    let activeFilter = "all";
+    let selectedId = islands[0].id;
+    let completed = new Set(JSON.parse(localStorage.getItem(progressKey) || "[]"));
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function saveProgress() {
+      localStorage.setItem(progressKey, JSON.stringify([...completed]));
+    }
+
+    function islandById(id) {
+      return islands.find((island) => island.id === id) || islands[0];
+    }
+
+    function mathGraphic(id, variant = "mini") {
+      const stroke = 'stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+      const thin = 'stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+      const faint = 'stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".32"';
+      const fill = 'fill="currentColor" opacity=".16"';
+      const solid = 'fill="currentColor"';
+      const text = 'fill="currentColor" font-size="13" font-weight="900" text-anchor="middle" font-family="Inter, system-ui, sans-serif"';
+      const diagrams = {
+        arithmetic: `<line ${thin} x1="14" y1="50" x2="106" y2="50"/><circle ${solid} cx="22" cy="50" r="5"/><circle ${solid} cx="48" cy="50" r="5"/><circle ${solid} cx="74" cy="50" r="5"/><circle ${solid} cx="100" cy="50" r="5"/><path ${thin} d="M25 33h20M51 33h20M77 33h20"/><text ${text} x="61" y="26">+d</text>`,
+        geometric: `<circle ${thin} cx="30" cy="45" r="8"/><circle ${thin} cx="58" cy="45" r="13"/><circle ${thin} cx="94" cy="45" r="20"/><path ${thin} d="M16 66c26-28 48-33 88-45"/><text ${text} x="60" y="17">x r</text>`,
+        finance: `<path ${faint} d="M18 60h88"/><path ${stroke} d="M18 58c18-17 31-21 45-18 17 4 29-5 43-25"/><circle ${solid} cx="26" cy="25" r="8"/><circle ${solid} cx="47" cy="22" r="8"/><text ${text} x="83" y="31">$</text>`,
+        exponents: `<line ${thin} x1="19" y1="62" x2="102" y2="62"/><line ${thin} x1="20" y1="62" x2="20" y2="16"/><path ${stroke} d="M23 57c20-3 34-10 43-22 8-10 18-16 35-17"/><text ${text} x="77" y="54">log</text>`,
+        accuracy: `<line ${stroke} x1="18" y1="42" x2="104" y2="42"/><path ${thin} d="M29 31v22M58 31v22M87 31v22"/><path ${thin} d="M42 58h32"/><text ${text} x="58" y="24">+- e</text>`,
+        complex: `<line ${thin} x1="60" y1="65" x2="60" y2="15"/><line ${thin} x1="22" y1="48" x2="100" y2="48"/><circle ${faint} cx="60" cy="48" r="27"/><path ${stroke} d="M60 48L88 27"/><circle ${solid} cx="88" cy="27" r="5"/><text ${text} x="91" y="52">z</text>`,
+        matrices: `<rect ${thin} x="25" y="18" width="70" height="48" rx="4"/><line ${thin} x1="60" y1="18" x2="60" y2="66"/><line ${thin} x1="25" y1="42" x2="95" y2="42"/><text ${text} x="42" y="36">a</text><text ${text} x="78" y="36">b</text><text ${text} x="42" y="59">c</text><text ${text} x="78" y="59">d</text>`,
+        eigen: `<line ${faint} x1="18" y1="55" x2="102" y2="25"/><path ${stroke} d="M35 49l34-12"/><path ${stroke} d="M67 37l-10-4M67 37l-5 10"/><text ${text} x="65" y="69">A v</text>`,
+        diagonalisation: `<rect ${thin} x="12" y="29" width="24" height="24" rx="4"/><rect ${thin} x="49" y="22" width="24" height="38" rx="4"/><rect ${thin} x="86" y="29" width="24" height="24" rx="4"/><path ${thin} d="M38 42h9M75 42h9"/><text ${text} x="61" y="71">P D P-1</text>`,
+        trig: `<path ${stroke} d="M23 62h74L47 22Z"/><path ${thin} d="M37 62a16 16 0 0 1 8-14"/><text ${text} x="39" y="56">A</text><text ${text} x="70" y="36">c</text>`,
+        voronoi: `<path ${thin} d="M20 18l28 22-15 30M48 40l34-25M48 40l41 34M48 40l-28-22M48 40l-15 30"/><circle ${solid} cx="28" cy="25" r="5"/><circle ${solid} cx="79" cy="23" r="5"/><circle ${solid} cx="82" cy="63" r="5"/><circle ${solid} cx="36" cy="63" r="5"/>`,
+        affine: `<path ${faint} d="M20 25h33v33H20Z"/><path ${stroke} d="M62 21h34L84 61H49Z"/><path ${thin} d="M52 42h10"/><text ${text} x="74" y="74">A x + b</text>`,
+        vectors: `<path ${stroke} d="M23 58l32-33"/><path ${stroke} d="M23 58l53-3"/><path ${stroke} d="M55 25l21 30"/><path ${thin} d="M55 25l-12 2M55 25l2 12M76 55l-10-7M76 55l-9 7"/><text ${text} x="88" y="29">a+b</text>`,
+        "graph-basics": `<line ${thin} x1="28" y1="30" x2="61" y2="20"/><line ${thin} x1="61" y1="20" x2="92" y2="46"/><line ${thin} x1="28" y1="30" x2="39" y2="62"/><line ${thin} x1="39" y1="62" x2="92" y2="46"/><circle ${solid} cx="28" cy="30" r="7"/><circle ${solid} cx="61" cy="20" r="7"/><circle ${solid} cx="92" cy="46" r="7"/><circle ${solid} cx="39" cy="62" r="7"/>`,
+        walks: `<rect ${thin} x="18" y="18" width="42" height="42" rx="4"/><line ${thin} x1="39" y1="18" x2="39" y2="60"/><line ${thin} x1="18" y1="39" x2="60" y2="39"/><path ${stroke} d="M72 58c20-20 2-31 25-43"/><circle ${solid} cx="72" cy="58" r="5"/><circle ${solid} cx="97" cy="15" r="5"/><text ${text} x="39" y="73">A^k</text>`,
+        "graph-structure": `<circle ${solid} cx="28" cy="26" r="6"/><circle ${solid} cx="56" cy="26" r="6"/><circle ${solid} cx="84" cy="26" r="6"/><circle ${solid} cx="42" cy="58" r="6"/><circle ${solid} cx="72" cy="58" r="6"/><path ${stroke} d="M28 26h28M56 26h28M28 26l14 32M56 26l16 32M84 26L72 58"/><text ${text} x="60" y="75">MST</text>`,
+        routes: `<path ${stroke} d="M30 26c27-16 63-2 61 25-2 24-43 29-62 11-18-17-11-27 1-36Z"/><circle ${solid} cx="30" cy="26" r="5"/><circle ${solid} cx="91" cy="51" r="5"/><circle ${solid} cx="43" cy="68" r="5"/><text ${text} x="60" y="21">min</text>`,
+        hypothesis: `<line ${thin} x1="15" y1="62" x2="105" y2="62"/><path ${stroke} d="M18 62c14 0 16-34 42-34s28 34 42 34"/><path ${fill} d="M86 62c7-12 9-23 16-28v28Z"/><text ${text} x="92" y="28">p</text>`,
+        confidence: `<path ${faint} d="M18 58c14 0 16-31 42-31s28 31 42 31"/><line ${stroke} x1="26" y1="58" x2="94" y2="58"/><path ${thin} d="M26 48v20M94 48v20"/><text ${text} x="60" y="24">CI</text>`,
+        markov: `<circle ${thin} cx="31" cy="31" r="12"/><circle ${thin} cx="83" cy="31" r="12"/><circle ${thin} cx="57" cy="61" r="12"/><path ${thin} d="M43 28c10-7 18-7 28 0M78 43L64 53M45 53L35 43"/><text ${text} x="57" y="18">T</text>`,
+        integration: `<line ${thin} x1="18" y1="63" x2="105" y2="63"/><path ${stroke} d="M20 60c18-35 35-38 50-15 10 16 20 19 35 8"/><path ${fill} d="M28 63V43h16v20ZM47 63V35h16v28ZM66 63V42h16v21Z"/><text ${text} x="83" y="25">int</text>`,
+        "slope-euler": `<path ${faint} d="M20 25l14-6M46 24l14 6M74 25l16-4M22 45l13 7M48 45l16-2M77 45l12 9M20 65l17 0M47 65l11-8M76 65l15-3"/><path ${stroke} d="M19 66l22-13 22-7 28-14"/><circle ${solid} cx="19" cy="66" r="4"/><circle ${solid} cx="41" cy="53" r="4"/><circle ${solid} cx="63" cy="46" r="4"/>`,
+        "phase-portraits": `<path ${thin} d="M62 41c20 2 24 27 3 31-25 5-44-18-35-39 9-23 46-24 58 0"/><path ${thin} d="M87 32l-12-1M87 32l-5-11"/><line ${faint} x1="60" y1="12" x2="60" y2="72"/><line ${faint} x1="22" y1="42" x2="100" y2="42"/><circle ${solid} cx="60" cy="42" r="4"/>`,
+        "second-order": `<path ${stroke} d="M15 43c10-30 20-30 30 0s20 30 30 0 20-30 30 0"/><line ${faint} x1="15" y1="43" x2="108" y2="43"/><path ${thin} d="M25 62h70"/><text ${text} x="60" y="75">x''</text>`
+      };
+
+      return `<svg class="math-icon ${variant}" aria-hidden="true" viewBox="0 0 120 80">${diagrams[id] || diagrams.arithmetic}</svg>`;
+    }
+
+    function drawRoutes() {
+      routesSvg.innerHTML = Object.values(routeOrder).map((ids) => {
+        const points = ids.map(islandById).map((island) => `${island.x},${island.y}`);
+        return `<polyline class="route" points="${points.join(" ")}"></polyline>`;
+      }).join("");
+    }
+
+    function renderIslands() {
+      islandLayer.innerHTML = islands.map((island) => `
+        <button class="island" type="button" data-id="${island.id}" style="--x:${island.x};--y:${island.y};--mx:${mobileLayout[island.id][0]};--my:${mobileLayout[island.id][1]};--island:${island.color};">
+          ${mathGraphic(island.id, "mini")}
+          <span class="point">${escapeHtml(island.points)}</span>
+          <span class="island-title">${escapeHtml(island.title)}</span>
+          <span class="level">${escapeHtml(island.level)}</span>
+        </button>
+      `).join("");
+
+      document.querySelectorAll(".island").forEach((button) => {
+        button.addEventListener("click", () => selectIsland(button.dataset.id, true));
+      });
+    }
+
+    function renderLog() {
+      logGrid.innerHTML = islands.map((island) => `
+        <article class="log-item" data-id="${island.id}">
+          ${mathGraphic(island.id, "log-graphic")}
+          <span>${escapeHtml(island.points)} - ${escapeHtml(island.level)}</span>
+          <strong>${escapeHtml(island.title)}</strong>
+          <span>${escapeHtml(island.blurb)}</span>
+          <div class="log-actions">
+            <a class="mini-link" href="${island.href}" data-open="${island.id}">Open applet</a>
+            <span class="status" data-status="${island.id}" hidden>Complete</span>
+          </div>
+        </article>
+      `).join("");
+
+      document.querySelectorAll("[data-open]").forEach((link) => {
+        link.addEventListener("click", () => {
+          completed.add(link.dataset.open);
+          saveProgress();
+          updateProgress();
+        });
+      });
+    }
+
+    function renderSelected() {
+      const island = islandById(selectedId);
+      const done = completed.has(island.id);
+      selectedPanel.innerHTML = `
+        <div class="selected-graphic" style="--selected-color:${island.color};">
+          ${mathGraphic(island.id, "hero")}
+        </div>
+        <div class="selected-meta">
+          <span class="pill">${escapeHtml(island.points)}</span>
+          <span class="pill">${escapeHtml(island.level)}</span>
+          <span class="pill">Topic ${escapeHtml(island.topic)}</span>
+        </div>
+        <h2>${escapeHtml(island.title)}</h2>
+        <p class="blurb">${escapeHtml(island.blurb)}</p>
+        <div class="actions">
+          <a class="launch" href="${island.href}" id="launchLink">Open applet</a>
+          <button class="complete-button ${done ? "done" : ""}" type="button" id="completeButton">${done ? "Completed" : "Mark complete"}</button>
+        </div>
+        <div class="file-name">${escapeHtml(island.href)}</div>
+      `;
+
+      document.querySelector("#completeButton").addEventListener("click", () => {
+        if (completed.has(island.id)) {
+          completed.delete(island.id);
+        } else {
+          completed.add(island.id);
+        }
+        saveProgress();
+        renderSelected();
+        updateProgress();
+      });
+
+      document.querySelector("#launchLink").addEventListener("click", () => {
+        completed.add(island.id);
+        saveProgress();
+        updateProgress();
+      });
+    }
+
+    function selectIsland(id, scrollPanel) {
+      selectedId = id;
+      document.querySelectorAll(".island").forEach((button) => {
+        button.classList.toggle("selected", button.dataset.id === id);
+      });
+      renderSelected();
+      if (scrollPanel && window.matchMedia("(max-width: 1020px)").matches) {
+        selectedPanel.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    }
+
+    function islandMatches(island) {
+      const term = search.value.trim().toLowerCase();
+      const filterMatch =
+        activeFilter === "all" ||
+        island.topic === activeFilter ||
+        island.level.toLowerCase().includes(activeFilter);
+      const searchText = `${island.points} ${island.title} ${island.blurb} ${island.group} ${island.href}`.toLowerCase();
+      return filterMatch && (!term || searchText.includes(term));
+    }
+
+    function applyFilters() {
+      const visible = islands.filter(islandMatches);
+      const visibleIds = new Set(visible.map((island) => island.id));
+
+      document.querySelectorAll(".island, .log-item").forEach((element) => {
+        element.classList.toggle("hidden", !visibleIds.has(element.dataset.id));
+      });
+
+      visibleCount.textContent = `${visible.length} destinations shown`;
+
+      if (visible.length && !visibleIds.has(selectedId)) {
+        selectIsland(visible[0].id, false);
+      }
+    }
+
+    function updateProgress() {
+      const total = islands.length;
+      const count = islands.filter((island) => completed.has(island.id)).length;
+      progressText.textContent = `${count} of ${total} complete`;
+      meterFill.style.width = `${Math.round((count / total) * 100)}%`;
+
+      document.querySelectorAll(".island").forEach((button) => {
+        button.classList.toggle("complete", completed.has(button.dataset.id));
+      });
+
+      document.querySelectorAll("[data-status]").forEach((status) => {
+        status.hidden = !completed.has(status.dataset.status);
+      });
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach((item) => item.classList.toggle("active", item === button));
+        applyFilters();
+      });
+    });
+
+    search.addEventListener("input", applyFilters);
+
+    document.querySelector("#resetProgress").addEventListener("click", () => {
+      completed = new Set();
+      saveProgress();
+      renderSelected();
+      updateProgress();
+    });
+
+    drawRoutes();
+    renderIslands();
+    renderLog();
+    selectIsland(selectedId, false);
+    updateProgress();
+    applyFilters();
+  </script>
+</body>
+</html>
