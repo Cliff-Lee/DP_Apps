@@ -654,6 +654,51 @@
       }
     }
 
+
+    .class-card {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid rgba(23, 32, 51, 0.14);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .class-title {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.15;
+    }
+
+    .class-label {
+      font-size: 0.78rem;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    .class-input {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .class-input:focus {
+      border-color: #172033;
+      box-shadow: 0 0 0 3px rgba(23, 32, 51, 0.14);
+    }
+
+    .class-message {
+      min-height: 1.2em;
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
     @media (max-width: 1020px) {
       .topbar,
       .voyage {
@@ -755,6 +800,16 @@
         </div>
 
         <aside class="panel" aria-label="Selected syllabus island">
+          <section class="class-card" id="classCard" aria-label="Join a class">
+            <h2 class="class-title">Join a class</h2>
+            <label class="class-label" for="classCodeInput">Class code</label>
+            <input class="class-input" id="classCodeInput" autocomplete="off" placeholder="e.g. AI2026">
+            <label class="class-label" for="nicknameInput">Nickname</label>
+            <input class="class-input" id="nicknameInput" autocomplete="nickname" placeholder="e.g. Sam">
+            <button class="control-button" type="button" id="joinClassButton">Join class</button>
+            <p class="class-message" id="classMessage">Progress is saved on this device until you join a class.</p>
+          </section>
+
           <div class="progress">
             <div class="progress-head">
               <span id="progressText">0 of 36 complete</span>
@@ -784,26 +839,35 @@
       </section>
     </main>
   </div>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC7xaB9D_ELuFmLgovj5KfoluOx8Pop3hQ",
-    authDomain: "ib-ai-applets.firebaseapp.com",
-    projectId: "ib-ai-applets",
-    storageBucket: "ib-ai-applets.firebasestorage.app",
-    messagingSenderId: "231854174766",
-    appId: "1:231854174766:web:f406fe521804c78777e5bf"
-  };
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
-  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7xaB9D_ELuFmLgovj5KfoluOx8Pop3hQ",
+      authDomain: "ib-ai-applets.firebaseapp.com",
+      projectId: "ib-ai-applets",
+      storageBucket: "ib-ai-applets.firebasestorage.app",
+      messagingSenderId: "231854174766",
+      appId: "1:231854174766:web:f406fe521804c78777e5bf"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+
     const islands = [
       {
         id: "scientific-notation",
@@ -1338,6 +1402,120 @@
     let activeFilter = "all";
     let selectedId = islands[0].id;
     let completed = new Set(loadProgress());
+    let currentClassCode = localStorage.getItem("class-code") || "";
+    let currentStudentUid = localStorage.getItem("student-uid") || "";
+    let currentNickname = localStorage.getItem("student-nickname") || "";
+
+    function cleanClassCode(value) {
+      return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
+    }
+
+    function cleanNickname(value) {
+      return String(value || "").trim().slice(0, 32);
+    }
+
+    async function ensureAnonymousUser() {
+      if (auth.currentUser) return auth.currentUser;
+      const result = await signInAnonymously(auth);
+      return result.user;
+    }
+
+    async function joinClass() {
+      const classCodeInput = document.querySelector("#classCodeInput");
+      const nicknameInput = document.querySelector("#nicknameInput");
+      const message = document.querySelector("#classMessage");
+      const classCode = cleanClassCode(classCodeInput.value);
+      const nickname = cleanNickname(nicknameInput.value);
+
+      if (!classCode || !nickname) {
+        message.textContent = "Enter a class code and nickname.";
+        return;
+      }
+
+      message.textContent = "Joining class...";
+
+      try {
+        const user = await ensureAnonymousUser();
+        const classRef = doc(db, "classes", classCode);
+        const classSnap = await getDoc(classRef);
+
+        if (!classSnap.exists()) {
+          message.textContent = "Class code not found. Check the code with your teacher.";
+          return;
+        }
+
+        await setDoc(doc(db, "classes", classCode, "students", user.uid), {
+          nickname,
+          joinedAt: serverTimestamp(),
+          lastSeen: serverTimestamp()
+        }, { merge: true });
+
+        currentClassCode = classCode;
+        currentStudentUid = user.uid;
+        currentNickname = nickname;
+
+        localStorage.setItem("class-code", classCode);
+        localStorage.setItem("student-uid", user.uid);
+        localStorage.setItem("student-nickname", nickname);
+
+        classCodeInput.value = classCode;
+        nicknameInput.value = nickname;
+        message.textContent = `Joined ${classCode} as ${nickname}.`;
+      } catch (error) {
+        console.error("Could not join class:", error);
+        message.textContent = "Could not join class. Check your internet connection and Firebase rules.";
+      }
+    }
+
+    function restoreClassSession() {
+      const classCodeInput = document.querySelector("#classCodeInput");
+      const nicknameInput = document.querySelector("#nicknameInput");
+      const message = document.querySelector("#classMessage");
+
+      if (currentClassCode) classCodeInput.value = currentClassCode;
+      if (currentNickname) nicknameInput.value = currentNickname;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user && currentClassCode && currentNickname) {
+          currentStudentUid = user.uid;
+          localStorage.setItem("student-uid", user.uid);
+          message.textContent = `Joined ${currentClassCode} as ${currentNickname}.`;
+        }
+      });
+    }
+
+    async function logProgress(appletId, eventType) {
+      if (!currentClassCode) return;
+
+      try {
+        const user = await ensureAnonymousUser();
+        currentStudentUid = user.uid;
+        localStorage.setItem("student-uid", user.uid);
+
+        const progressRef = doc(db, "classes", currentClassCode, "students", user.uid, "progress", appletId);
+        const progressUpdate = {
+          appletId,
+          lastSeen: serverTimestamp()
+        };
+
+        if (eventType === "opened") {
+          progressUpdate.opened = true;
+        }
+
+        if (eventType === "completed") {
+          progressUpdate.opened = true;
+          progressUpdate.completed = true;
+          progressUpdate.completedAt = serverTimestamp();
+        }
+
+        await setDoc(progressRef, progressUpdate, { merge: true });
+        await setDoc(doc(db, "classes", currentClassCode, "students", user.uid), {
+          lastSeen: serverTimestamp()
+        }, { merge: true });
+      } catch (error) {
+        console.error("Progress logging failed:", error);
+      }
+    }
 
     function loadProgress() {
       try {
@@ -1457,10 +1635,13 @@
       `).join("");
 
       document.querySelectorAll("[data-open]").forEach((link) => {
-        link.addEventListener("click", () => {
+        link.addEventListener("click", async (event) => {
+          event.preventDefault();
           completed.add(link.dataset.open);
           saveProgress();
           updateProgress();
+          await logProgress(link.dataset.open, "opened");
+          window.location.href = link.href;
         });
       });
     }
@@ -1486,21 +1667,25 @@
         <div class="file-name">${escapeHtml(island.href)}</div>
       `;
 
-      document.querySelector("#completeButton").addEventListener("click", () => {
+      document.querySelector("#completeButton").addEventListener("click", async () => {
         if (completed.has(island.id)) {
           completed.delete(island.id);
         } else {
           completed.add(island.id);
+          await logProgress(island.id, "completed");
         }
         saveProgress();
         renderSelected();
         updateProgress();
       });
 
-      document.querySelector("#launchLink").addEventListener("click", () => {
+      document.querySelector("#launchLink").addEventListener("click", async (event) => {
+        event.preventDefault();
         completed.add(island.id);
         saveProgress();
         updateProgress();
+        await logProgress(island.id, "opened");
+        window.location.href = event.currentTarget.href;
       });
     }
 
@@ -1577,6 +1762,9 @@
     });
 
     search.addEventListener("input", applyFilters);
+
+    document.querySelector("#joinClassButton").addEventListener("click", joinClass);
+    restoreClassSession();
 
     document.querySelector("#resetProgress").addEventListener("click", () => {
       if (completed.size && !confirm("Reset all completion ticks?")) return;
