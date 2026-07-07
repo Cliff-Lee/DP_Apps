@@ -49,6 +49,30 @@
       color: inherit;
     }
 
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: 12px;
+      z-index: 100;
+      transform: translateY(-140%);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #172033;
+      color: #fffaf0;
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    :focus-visible {
+      outline: 4px solid rgba(23, 32, 51, 0.34);
+      outline-offset: 3px;
+    }
+
     .shell {
       min-height: 100vh;
       background:
@@ -159,7 +183,7 @@
 
     .map {
       position: relative;
-      min-height: 760px;
+      min-height: 1040px;
       overflow: hidden;
       border-right: 1px solid rgba(255, 250, 240, 0.42);
       background:
@@ -212,22 +236,27 @@
 
     .label-number {
       left: 8%;
-      top: 6%;
+      top: 4%;
+    }
+
+    .label-functions {
+      right: 8%;
+      top: 31%;
     }
 
     .label-geometry {
-      right: 8%;
-      top: 18%;
+      left: 8%;
+      top: 44%;
     }
 
     .label-stats {
-      left: 10%;
-      bottom: 28%;
+      right: 8%;
+      bottom: 23%;
     }
 
     .label-calculus {
-      right: 9%;
-      bottom: 13%;
+      left: 8%;
+      bottom: 4%;
     }
 
     .island-layer {
@@ -274,6 +303,24 @@
       background: rgba(12, 56, 92, 0.24);
       filter: blur(2px);
       z-index: -1;
+    }
+
+    .island.complete::before {
+      content: "✓";
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      width: 28px;
+      height: 28px;
+      border: 2px solid #172033;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #dff3d7;
+      color: #172033;
+      font-size: 0.9rem;
+      font-weight: 1000;
+      box-shadow: 0 7px 16px rgba(19, 48, 85, 0.22);
     }
 
     .math-icon {
@@ -347,6 +394,24 @@
       font-size: 0.66rem;
       font-weight: 950;
       border: 1px solid rgba(23, 32, 51, 0.14);
+    }
+
+    .empty-state {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 6;
+      transform: translate(-50%, -50%);
+      max-width: min(420px, calc(100% - 40px));
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 250, 240, 0.62);
+      border-radius: 18px;
+      background: rgba(23, 32, 51, 0.72);
+      color: #fffaf0;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
     .panel {
@@ -580,6 +645,15 @@
       border: 1px solid #b8d9bd;
     }
 
+    @media (min-width: 1021px) {
+      .panel {
+        position: sticky;
+        top: 80px;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+    }
+
     @media (max-width: 1020px) {
       .topbar,
       .voyage {
@@ -591,7 +665,7 @@
       }
 
       .map {
-        min-height: 720px;
+        min-height: 1040px;
         border-right: 0;
       }
 
@@ -612,7 +686,7 @@
       }
 
       .map {
-        min-height: 1740px;
+        min-height: 2700px;
       }
 
       .routes {
@@ -647,18 +721,20 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#logGrid">Skip to applet list</a>
   <div class="shell">
     <header class="topbar">
       <div class="brand">
         <h1>IB AI Archipelago</h1>
-        <div class="tagline">A syllabus map for 24 interactive applets.</div>
+        <div class="tagline" id="totalTagline">A syllabus map for 36 interactive applets.</div>
       </div>
       <div class="controls" aria-label="Map filters">
-        <input class="search" id="search" type="search" placeholder="Search syllabus">
+        <input class="search" id="search" type="search" placeholder="Search applets">
         <button class="control-button active" type="button" data-filter="all">All</button>
         <button class="control-button" type="button" data-filter="sl">SL</button>
         <button class="control-button" type="button" data-filter="ahl">AHL</button>
         <button class="control-button" type="button" data-filter="1">Topic 1</button>
+        <button class="control-button" type="button" data-filter="2">Topic 2</button>
         <button class="control-button" type="button" data-filter="3">Topic 3</button>
         <button class="control-button" type="button" data-filter="4">Topic 4</button>
         <button class="control-button" type="button" data-filter="5">Topic 5</button>
@@ -670,16 +746,18 @@
         <div class="map" id="map">
           <svg class="routes" id="routes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
           <div class="map-label label-number">Topic 1: Number and algebra</div>
+          <div class="map-label label-functions">Topic 2: Functions</div>
           <div class="map-label label-geometry">Topic 3: Geometry and trigonometry</div>
           <div class="map-label label-stats">Topic 4: Statistics and probability</div>
           <div class="map-label label-calculus">Topic 5: Calculus</div>
           <div class="island-layer" id="islandLayer"></div>
+          <div class="empty-state" id="emptyMessage" hidden>No matching applets. Try another search term or filter.</div>
         </div>
 
         <aside class="panel" aria-label="Selected syllabus island">
           <div class="progress">
             <div class="progress-head">
-              <span id="progressText">0 of 24 complete</span>
+              <span id="progressText">0 of 36 complete</span>
               <button class="reset-button" type="button" id="resetProgress">Reset</button>
             </div>
             <div class="meter" aria-hidden="true"><div class="meter-fill" id="meterFill"></div></div>
@@ -689,6 +767,7 @@
 
           <div class="legend">
             <div class="legend-row"><span class="dot" style="background:#f3c35b"></span><span>Number and algebra</span></div>
+            <div class="legend-row"><span class="dot" style="background:#7fc0e6"></span><span>Functions</span></div>
             <div class="legend-row"><span class="dot" style="background:#75cbb7"></span><span>Geometry and trigonometry</span></div>
             <div class="legend-row"><span class="dot" style="background:#ef9fac"></span><span>Statistics and probability</span></div>
             <div class="legend-row"><span class="dot" style="background:#9f8ad9"></span><span>Calculus</span></div>
@@ -709,6 +788,19 @@
   <script>
     const islands = [
       {
+        id: "scientific-notation",
+        topic: "1",
+        group: "Number and algebra",
+        level: "SL",
+        points: "SL 1.1",
+        title: "Scientific notation",
+        blurb: "Standard form, powers of ten, calculator notation and context checks.",
+        href: "sl_1_1_scientific_notation_resource(1).html",
+        color: "#f3c35b",
+        x: 10,
+        y: 10
+      },
+      {
         id: "arithmetic",
         topic: "1",
         group: "Number and algebra",
@@ -718,8 +810,8 @@
         blurb: "Patterns, nth terms, sigma notation, sums and simple-interest models.",
         href: "sl-1-02-arithmetic-sequences-series.html",
         color: "#f3c35b",
-        x: 15,
-        y: 16
+        x: 28,
+        y: 10
       },
       {
         id: "geometric",
@@ -731,8 +823,8 @@
         blurb: "Finite geometric models, compound growth and sums to infinity.",
         href: "sl-1-03-ahl-1-11-geometric-sequences-series.html",
         color: "#f0a757",
-        x: 30,
-        y: 13
+        x: 46,
+        y: 10
       },
       {
         id: "finance",
@@ -744,8 +836,8 @@
         blurb: "Compound interest, depreciation, annuities, loans and amortization.",
         href: "sl-1-04-sl-1-07-financial-mathematics.html",
         color: "#86bd62",
-        x: 46,
-        y: 17
+        x: 64,
+        y: 10
       },
       {
         id: "exponents",
@@ -757,8 +849,8 @@
         blurb: "Laws of exponents, logarithms and rational exponent extensions.",
         href: "sl-1-05-ahl-1-10-exponents-logarithms.html",
         color: "#68bfd5",
-        x: 63,
-        y: 14
+        x: 82,
+        y: 10
       },
       {
         id: "accuracy",
@@ -770,8 +862,8 @@
         blurb: "Approximation, bounds, percentage error and trustworthy numbers.",
         href: "sl-1-06-accuracy-approximation-error.html",
         color: "#ef7e6b",
-        x: 79,
-        y: 19
+        x: 18,
+        y: 22
       },
       {
         id: "complex",
@@ -783,8 +875,8 @@
         blurb: "Cartesian, polar and exponential forms, operations and Argand diagrams.",
         href: "ahl-1-12-ahl-1-13-complex-numbers.html",
         color: "#9f8ad9",
-        x: 20,
-        y: 30
+        x: 36,
+        y: 22
       },
       {
         id: "matrices",
@@ -796,8 +888,8 @@
         blurb: "Matrix algebra, determinants, inverses, systems, coding and decoding.",
         href: "ahl-1-14-matrices.html",
         color: "#75cbb7",
-        x: 38,
-        y: 31
+        x: 54,
+        y: 22
       },
       {
         id: "eigen",
@@ -809,8 +901,8 @@
         blurb: "Characteristic polynomials, eigenvectors and matrix powers.",
         href: "ahl-1-15-eigenvalues-eigenvectors.html",
         color: "#f2d36f",
-        x: 56,
-        y: 30
+        x: 72,
+        y: 22
       },
       {
         id: "diagonalisation",
@@ -822,8 +914,73 @@
         blurb: "Diagonalisation, geometry and repeated transformations.",
         href: "ahl-1-15-matrix-diagonalisation.html",
         color: "#d596c6",
-        x: 74,
-        y: 33
+        x: 90,
+        y: 22
+      },
+      {
+        id: "straight-lines",
+        topic: "2",
+        group: "Functions",
+        level: "SL",
+        points: "SL 2.1",
+        title: "Straight lines",
+        blurb: "Gradient, intercepts, parallel and perpendicular lines, and equations from graphs or points.",
+        href: "sl_2_1_straight_lines_resource.html",
+        color: "#7fc0e6",
+        x: 16,
+        y: 34
+      },
+      {
+        id: "functions-inverses",
+        topic: "2",
+        group: "Functions",
+        level: "SL",
+        points: "SL 2.2",
+        title: "Functions and inverse functions",
+        blurb: "Function notation, domains and ranges, composition, inverses and real-world mappings.",
+        href: "sl_2_2_functions_resource.html",
+        color: "#68bfd5",
+        x: 39,
+        y: 34
+      },
+      {
+        id: "graphs-functions",
+        topic: "2",
+        group: "Functions",
+        level: "SL",
+        points: "SL 2.3",
+        title: "Graphs of functions",
+        blurb: "Sketching, technology, intercepts, transformations and graphical interpretation.",
+        href: "sl_2_3_graphs_of_functions_resource(1).html",
+        color: "#75cbb7",
+        x: 62,
+        y: 34
+      },
+      {
+        id: "key-features",
+        topic: "2",
+        group: "Functions",
+        level: "SL",
+        points: "SL 2.4",
+        title: "Key features of graphs",
+        blurb: "Roots, intercepts, vertices, asymptotes, domains, ranges and exam-style interpretation.",
+        href: "sl_2_4_key_features_graphs_resource(2).html",
+        color: "#9f8ad9",
+        x: 85,
+        y: 34
+      },
+      {
+        id: "geometry-3d",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "SL",
+        points: "SL 3.1",
+        title: "3D geometry",
+        blurb: "Volume, surface area, right prisms, pyramids, cones, spheres and composite solids.",
+        href: "sl_3_1_3d_geometry_resource(1).html",
+        color: "#75cbb7",
+        x: 10,
+        y: 47
       },
       {
         id: "trig",
@@ -835,7 +992,20 @@
         blurb: "Sine rule, cosine rule, right triangles and area of a triangle.",
         href: "sl-3-02-triangle-trigonometry.html",
         color: "#75cbb7",
-        x: 18,
+        x: 28,
+        y: 47
+      },
+      {
+        id: "arcs-radians",
+        topic: "3",
+        group: "Geometry and trigonometry",
+        level: "SL + AHL",
+        points: "SL 3.4 / AHL 3.7",
+        title: "Arcs, sectors and radians",
+        blurb: "Arc length, sector area, degree-radian conversion and exact radian measure.",
+        href: "sl_3_4_ahl_3_7_arcs_sectors_radians_resource(1).html",
+        color: "#7048e8",
+        x: 46,
         y: 47
       },
       {
@@ -848,8 +1018,8 @@
         blurb: "Sites, cells, nearest neighbours, toxic waste and interpolation.",
         href: "sl-3-06-voronoi-diagrams.html",
         color: "#84c38d",
-        x: 34,
-        y: 45
+        x: 64,
+        y: 47
       },
       {
         id: "affine",
@@ -861,8 +1031,8 @@
         blurb: "Matrix transformations, translations, compositions, determinants and fractals.",
         href: "ahl-3-09-affine-transformations.html",
         color: "#efb163",
-        x: 52,
-        y: 46
+        x: 82,
+        y: 47
       },
       {
         id: "vectors",
@@ -874,8 +1044,8 @@
         blurb: "Vector basics, lines, kinematics, scalar products and vector products.",
         href: "ahl-3-10-ahl-3-13-vectors.html",
         color: "#7fc0e6",
-        x: 70,
-        y: 45
+        x: 16,
+        y: 59
       },
       {
         id: "graph-basics",
@@ -887,8 +1057,8 @@
         blurb: "Vertices, edges, degree, connectedness, directed graphs, subgraphs and trees.",
         href: "ahl-3-14-graph-theory-basics.html",
         color: "#f3c35b",
-        x: 84,
-        y: 51
+        x: 34,
+        y: 59
       },
       {
         id: "walks",
@@ -900,8 +1070,8 @@
         blurb: "Adjacency matrices, k-length walks, weighted tables and transition matrices.",
         href: "ahl-3-15-adjacency-matrices-walks.html",
         color: "#d596c6",
-        x: 29,
-        y: 61
+        x: 52,
+        y: 59
       },
       {
         id: "graph-structure",
@@ -913,8 +1083,8 @@
         blurb: "Trails, paths, circuits, cycles, Eulerian tests, Hamiltonian tests and MSTs.",
         href: "ahl-3-16-graph-structure-algorithms.html",
         color: "#86bd62",
-        x: 49,
-        y: 61
+        x: 70,
+        y: 59
       },
       {
         id: "routes",
@@ -926,8 +1096,60 @@
         blurb: "Chinese postman, travelling salesman, upper bounds and lower bounds.",
         href: "ahl-3-16-route-optimisation.html",
         color: "#ef7e6b",
-        x: 69,
-        y: 62
+        x: 88,
+        y: 59
+      },
+      {
+        id: "data-sampling-outliers",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "SL",
+        points: "SL 4.1",
+        title: "Data, sampling and outliers",
+        blurb: "Sampling methods, bias, populations, samples, outliers and cleaned data decisions.",
+        href: "sl_4_1_data_sampling_outliers_resource(2).html",
+        color: "#ef9fac",
+        x: 12,
+        y: 72
+      },
+      {
+        id: "data-presentation-statistics",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "SL",
+        points: "SL 4.2-4.3",
+        title: "Data presentation and descriptive statistics",
+        blurb: "Frequency diagrams, cumulative frequency, box plots, averages, spread and technology checks.",
+        href: "sl_4_2_4_3_data_presentation_statistics_resource(2).html",
+        color: "#f0a757",
+        x: 32,
+        y: 72
+      },
+      {
+        id: "probability",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "SL",
+        points: "SL 4.5",
+        title: "Probability",
+        blurb: "Probability language, complements, expected outcomes, mutually exclusive events and independence.",
+        href: "sl_4_5_probability_resource(1).html",
+        color: "#75cbb7",
+        x: 52,
+        y: 72
+      },
+      {
+        id: "probability-representations",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "SL",
+        points: "SL 4.6",
+        title: "Probability representations",
+        blurb: "Venn diagrams, tree diagrams, sample spaces and set notation for probability.",
+        href: "sl_4_6_probability_representations_applet(3).html",
+        color: "#7fc0e6",
+        x: 72,
+        y: 72
       },
       {
         id: "hypothesis",
@@ -939,8 +1161,8 @@
         blurb: "Chi-square tests, t-tests, critical regions, p-values and Type I/II errors.",
         href: "sl-4-11-ahl-4-18-hypothesis-testing.html",
         color: "#ef9fac",
-        x: 22,
-        y: 76
+        x: 92,
+        y: 72
       },
       {
         id: "confidence",
@@ -952,8 +1174,21 @@
         blurb: "Normal means, t intervals, interpretation and exam-ready conclusions.",
         href: "ahl-4-16-confidence-intervals.html",
         color: "#f0a757",
-        x: 42,
-        y: 75
+        x: 24,
+        y: 84
+      },
+      {
+        id: "poisson",
+        topic: "4",
+        group: "Statistics and probability",
+        level: "AHL",
+        points: "AHL 4.17",
+        title: "Poisson distribution",
+        blurb: "Poisson probabilities, means, assumptions, calculator steps and modelling rare events.",
+        href: "ahl_4_17_poisson_distribution_resource(2).html",
+        color: "#7048e8",
+        x: 48,
+        y: 84
       },
       {
         id: "markov",
@@ -965,8 +1200,8 @@
         blurb: "Transition matrices, state vectors, repeated powers and steady states.",
         href: "ahl-4-19-markov-chains.html",
         color: "#9f8ad9",
-        x: 62,
-        y: 76
+        x: 72,
+        y: 84
       },
       {
         id: "integration",
@@ -978,8 +1213,8 @@
         blurb: "Anti-differentiation, definite integrals, area and numerical approximation.",
         href: "sl-5-05-sl-5-08-integration-trapezoidal-rule.html",
         color: "#9f8ad9",
-        x: 29,
-        y: 90
+        x: 22,
+        y: 94
       },
       {
         id: "slope-euler",
@@ -991,8 +1226,8 @@
         blurb: "Slope fields, solution curves, Euler tables, step size and approximation error.",
         href: "ahl-5-15-ahl-5-16-slope-fields-euler-method.html",
         color: "#75cbb7",
-        x: 50,
-        y: 88
+        x: 42,
+        y: 94
       },
       {
         id: "phase-portraits",
@@ -1004,8 +1239,8 @@
         blurb: "Phase portraits, equilibrium points, stability and coupled linear systems.",
         href: "ahl-5-17-coupled-differential-equations-phase-portraits.html",
         color: "#7fc0e6",
-        x: 69,
-        y: 88
+        x: 62,
+        y: 94
       },
       {
         id: "second-order",
@@ -1017,43 +1252,56 @@
         blurb: "Second-order systems, Euler solutions and exact solution comparisons.",
         href: "ahl-5-18-second-order-differential-equations.html",
         color: "#ef7e6b",
-        x: 86,
-        y: 82
+        x: 82,
+        y: 94
       }
     ];
 
     const routeOrder = {
-      "1": ["arithmetic", "geometric", "finance", "exponents", "accuracy", "complex", "matrices", "eigen", "diagonalisation"],
-      "3": ["trig", "voronoi", "affine", "vectors", "graph-basics", "walks", "graph-structure", "routes"],
-      "4": ["hypothesis", "confidence", "markov"],
+      "1": ["scientific-notation", "arithmetic", "geometric", "finance", "exponents", "accuracy", "complex", "matrices", "eigen", "diagonalisation"],
+      "2": ["straight-lines", "functions-inverses", "graphs-functions", "key-features"],
+      "3": ["geometry-3d", "trig", "arcs-radians", "voronoi", "affine", "vectors", "graph-basics", "walks", "graph-structure", "routes"],
+      "4": ["data-sampling-outliers", "data-presentation-statistics", "probability", "probability-representations", "hypothesis", "confidence", "poisson", "markov"],
       "5": ["integration", "slope-euler", "phase-portraits", "second-order"]
     };
 
     const mobileLayout = {
-      arithmetic: [27, 5],
-      geometric: [73, 5],
-      finance: [27, 12.8],
-      exponents: [73, 12.8],
-      accuracy: [27, 20.6],
-      complex: [73, 20.6],
-      matrices: [27, 28.4],
-      eigen: [73, 28.4],
-      diagonalisation: [27, 36.2],
-      trig: [73, 36.2],
-      voronoi: [27, 44],
-      affine: [73, 44],
-      vectors: [27, 51.8],
-      "graph-basics": [73, 51.8],
-      walks: [27, 59.6],
-      "graph-structure": [73, 59.6],
-      routes: [27, 67.4],
-      hypothesis: [73, 67.4],
-      confidence: [27, 75.2],
-      markov: [73, 75.2],
-      integration: [27, 83],
-      "slope-euler": [73, 83],
-      "phase-portraits": [27, 90.8],
-      "second-order": [73, 90.8]
+      "scientific-notation": [27, 4.0],
+      "arithmetic": [73, 4.0],
+      "geometric": [27, 9.4],
+      "finance": [73, 9.4],
+      "exponents": [27, 14.8],
+      "accuracy": [73, 14.8],
+      "complex": [27, 20.2],
+      "matrices": [73, 20.2],
+      "eigen": [27, 25.6],
+      "diagonalisation": [73, 25.6],
+      "straight-lines": [27, 31.0],
+      "functions-inverses": [73, 31.0],
+      "graphs-functions": [27, 36.4],
+      "key-features": [73, 36.4],
+      "geometry-3d": [27, 41.8],
+      "trig": [73, 41.8],
+      "arcs-radians": [27, 47.2],
+      "voronoi": [73, 47.2],
+      "affine": [27, 52.6],
+      "vectors": [73, 52.6],
+      "graph-basics": [27, 58.0],
+      "walks": [73, 58.0],
+      "graph-structure": [27, 63.4],
+      "routes": [73, 63.4],
+      "data-sampling-outliers": [27, 68.8],
+      "data-presentation-statistics": [73, 68.8],
+      "probability": [27, 74.2],
+      "probability-representations": [73, 74.2],
+      "hypothesis": [27, 79.6],
+      "confidence": [73, 79.6],
+      "poisson": [27, 85.0],
+      "markov": [73, 85.0],
+      "integration": [27, 90.4],
+      "slope-euler": [73, 90.4],
+      "phase-portraits": [27, 95.8],
+      "second-order": [73, 95.8]
     };
 
     const progressKey = "ib-ai-archipelago-progress";
@@ -1066,9 +1314,22 @@
     const progressText = document.querySelector("#progressText");
     const meterFill = document.querySelector("#meterFill");
     const visibleCount = document.querySelector("#visibleCount");
+    const totalTagline = document.querySelector("#totalTagline");
+    const emptyMessage = document.querySelector("#emptyMessage");
+    const validIslandIds = new Set(islands.map((island) => island.id));
     let activeFilter = "all";
     let selectedId = islands[0].id;
-    let completed = new Set(JSON.parse(localStorage.getItem(progressKey) || "[]"));
+    let completed = new Set(loadProgress());
+
+    function loadProgress() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(progressKey) || "[]");
+        return Array.isArray(stored) ? stored.filter((id) => validIslandIds.has(id)) : [];
+      } catch (error) {
+        console.warn("Could not read saved progress; starting fresh.", error);
+        return [];
+      }
+    }
 
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, (char) => ({
@@ -1081,7 +1342,11 @@
     }
 
     function saveProgress() {
-      localStorage.setItem(progressKey, JSON.stringify([...completed]));
+      try {
+        localStorage.setItem(progressKey, JSON.stringify([...completed].filter((id) => validIslandIds.has(id))));
+      } catch (error) {
+        console.warn("Could not save progress.", error);
+      }
     }
 
     function islandById(id) {
@@ -1100,12 +1365,19 @@
         geometric: `<circle ${thin} cx="30" cy="45" r="8"/><circle ${thin} cx="58" cy="45" r="13"/><circle ${thin} cx="94" cy="45" r="20"/><path ${thin} d="M16 66c26-28 48-33 88-45"/><text ${text} x="60" y="17">x r</text>`,
         finance: `<path ${faint} d="M18 60h88"/><path ${stroke} d="M18 58c18-17 31-21 45-18 17 4 29-5 43-25"/><circle ${solid} cx="26" cy="25" r="8"/><circle ${solid} cx="47" cy="22" r="8"/><text ${text} x="83" y="31">$</text>`,
         exponents: `<line ${thin} x1="19" y1="62" x2="102" y2="62"/><line ${thin} x1="20" y1="62" x2="20" y2="16"/><path ${stroke} d="M23 57c20-3 34-10 43-22 8-10 18-16 35-17"/><text ${text} x="77" y="54">log</text>`,
-        accuracy: `<line ${stroke} x1="18" y1="42" x2="104" y2="42"/><path ${thin} d="M29 31v22M58 31v22M87 31v22"/><path ${thin} d="M42 58h32"/><text ${text} x="58" y="24">+- e</text>`,
+        accuracy: `<line ${stroke} x1="18" y1="42" x2="104" y2="42"/><path ${thin} d="M29 31v22M58 31v22M87 31v22"/><path ${thin} d="M42 58h32"/><text ${text} x="58" y="24">±e</text>`,
+        "scientific-notation": `<line ${thin} x1="18" y1="58" x2="103" y2="58"/><path ${stroke} d="M24 58c11-24 25-28 42-26 16 2 25-7 34-22"/><text ${text} x="55" y="23">10ⁿ</text><circle ${solid} cx="82" cy="27" r="4"/>`,
+        "straight-lines": `<line ${thin} x1="18" y1="65" x2="104" y2="65"/><line ${thin} x1="25" y1="68" x2="25" y2="15"/><path ${stroke} d="M18 61L103 22"/><text ${text} x="78" y="55">m</text><circle ${solid} cx="54" cy="45" r="4"/>`,
+        "functions-inverses": `<path ${thin} d="M18 25h30M18 55h30M72 25h30M72 55h30"/><path ${stroke} d="M49 25c15 0 8 30 23 30M72 25c-15 0-8 30-23 30"/><text ${text} x="60" y="18">f</text><text ${text} x="60" y="72">f⁻¹</text>`,
+        "graphs-functions": `<line ${thin} x1="18" y1="62" x2="105" y2="62"/><line ${thin} x1="23" y1="68" x2="23" y2="15"/><path ${stroke} d="M23 58c17-28 30-28 43-3 11 21 21 9 36-26"/><text ${text} x="82" y="24">f(x)</text>`,
+        "key-features": `<line ${thin} x1="17" y1="61" x2="106" y2="61"/><line ${thin} x1="23" y1="68" x2="23" y2="16"/><path ${stroke} d="M20 27c18 52 52 52 72 0"/><circle ${solid} cx="36" cy="61" r="4"/><circle ${solid} cx="76" cy="61" r="4"/><text ${text} x="57" y="72">roots</text>`,
         complex: `<line ${thin} x1="60" y1="65" x2="60" y2="15"/><line ${thin} x1="22" y1="48" x2="100" y2="48"/><circle ${faint} cx="60" cy="48" r="27"/><path ${stroke} d="M60 48L88 27"/><circle ${solid} cx="88" cy="27" r="5"/><text ${text} x="91" y="52">z</text>`,
         matrices: `<rect ${thin} x="25" y="18" width="70" height="48" rx="4"/><line ${thin} x1="60" y1="18" x2="60" y2="66"/><line ${thin} x1="25" y1="42" x2="95" y2="42"/><text ${text} x="42" y="36">a</text><text ${text} x="78" y="36">b</text><text ${text} x="42" y="59">c</text><text ${text} x="78" y="59">d</text>`,
         eigen: `<line ${faint} x1="18" y1="55" x2="102" y2="25"/><path ${stroke} d="M35 49l34-12"/><path ${stroke} d="M67 37l-10-4M67 37l-5 10"/><text ${text} x="65" y="69">A v</text>`,
-        diagonalisation: `<rect ${thin} x="12" y="29" width="24" height="24" rx="4"/><rect ${thin} x="49" y="22" width="24" height="38" rx="4"/><rect ${thin} x="86" y="29" width="24" height="24" rx="4"/><path ${thin} d="M38 42h9M75 42h9"/><text ${text} x="61" y="71">P D P-1</text>`,
+        diagonalisation: `<rect ${thin} x="12" y="29" width="24" height="24" rx="4"/><rect ${thin} x="49" y="22" width="24" height="38" rx="4"/><rect ${thin} x="86" y="29" width="24" height="24" rx="4"/><path ${thin} d="M38 42h9M75 42h9"/><text ${text} x="61" y="71">PDP⁻¹</text>`,
         trig: `<path ${stroke} d="M23 62h74L47 22Z"/><path ${thin} d="M37 62a16 16 0 0 1 8-14"/><text ${text} x="39" y="56">A</text><text ${text} x="70" y="36">c</text>`,
+        "geometry-3d": `<path ${stroke} d="M27 25h48l20 15v33H47L27 58Z"/><path ${thin} d="M27 25l20 15h48M47 40v33M75 25l20 15"/><text ${text} x="63" y="20">V</text>`,
+        "arcs-radians": `<circle ${thin} cx="60" cy="43" r="30"/><path ${fill} d="M60 43L90 43A30 30 0 0 0 75 17Z"/><path ${stroke} d="M90 43A30 30 0 0 0 75 17"/><line ${thin} x1="60" y1="43" x2="90" y2="43"/><line ${thin} x1="60" y1="43" x2="75" y2="17"/><text ${text} x="69" y="38">θ</text>`,
         voronoi: `<path ${thin} d="M20 18l28 22-15 30M48 40l34-25M48 40l41 34M48 40l-28-22M48 40l-15 30"/><circle ${solid} cx="28" cy="25" r="5"/><circle ${solid} cx="79" cy="23" r="5"/><circle ${solid} cx="82" cy="63" r="5"/><circle ${solid} cx="36" cy="63" r="5"/>`,
         affine: `<path ${faint} d="M20 25h33v33H20Z"/><path ${stroke} d="M62 21h34L84 61H49Z"/><path ${thin} d="M52 42h10"/><text ${text} x="74" y="74">A x + b</text>`,
         vectors: `<path ${stroke} d="M23 58l32-33"/><path ${stroke} d="M23 58l53-3"/><path ${stroke} d="M55 25l21 30"/><path ${thin} d="M55 25l-12 2M55 25l2 12M76 55l-10-7M76 55l-9 7"/><text ${text} x="88" y="29">a+b</text>`,
@@ -1113,10 +1385,15 @@
         walks: `<rect ${thin} x="18" y="18" width="42" height="42" rx="4"/><line ${thin} x1="39" y1="18" x2="39" y2="60"/><line ${thin} x1="18" y1="39" x2="60" y2="39"/><path ${stroke} d="M72 58c20-20 2-31 25-43"/><circle ${solid} cx="72" cy="58" r="5"/><circle ${solid} cx="97" cy="15" r="5"/><text ${text} x="39" y="73">A^k</text>`,
         "graph-structure": `<circle ${solid} cx="28" cy="26" r="6"/><circle ${solid} cx="56" cy="26" r="6"/><circle ${solid} cx="84" cy="26" r="6"/><circle ${solid} cx="42" cy="58" r="6"/><circle ${solid} cx="72" cy="58" r="6"/><path ${stroke} d="M28 26h28M56 26h28M28 26l14 32M56 26l16 32M84 26L72 58"/><text ${text} x="60" y="75">MST</text>`,
         routes: `<path ${stroke} d="M30 26c27-16 63-2 61 25-2 24-43 29-62 11-18-17-11-27 1-36Z"/><circle ${solid} cx="30" cy="26" r="5"/><circle ${solid} cx="91" cy="51" r="5"/><circle ${solid} cx="43" cy="68" r="5"/><text ${text} x="60" y="21">min</text>`,
+        "data-sampling-outliers": `<line ${thin} x1="18" y1="58" x2="104" y2="58"/><circle ${solid} cx="25" cy="48" r="4"/><circle ${solid} cx="37" cy="44" r="4"/><circle ${solid} cx="50" cy="50" r="4"/><circle ${solid} cx="65" cy="42" r="4"/><circle ${solid} cx="99" cy="25" r="4"/><text ${text} x="93" y="18">out</text>`,
+        "data-presentation-statistics": `<rect ${fill} x="24" y="40" width="12" height="23"/><rect ${fill} x="45" y="27" width="12" height="36"/><rect ${fill} x="66" y="18" width="12" height="45"/><rect ${fill} x="87" y="34" width="12" height="29"/><line ${thin} x1="18" y1="63" x2="106" y2="63"/><text ${text} x="62" y="75">x̄</text>`,
+        probability: `<rect ${thin} x="22" y="22" width="34" height="34" rx="6"/><circle ${solid} cx="33" cy="33" r="3"/><circle ${solid} cx="45" cy="45" r="3"/><path ${stroke} d="M72 58c18-18 6-31 25-43"/><text ${text} x="71" y="25">P</text>`,
+        "probability-representations": `<circle ${thin} cx="48" cy="42" r="24"/><circle ${thin} cx="72" cy="42" r="24"/><path ${stroke} d="M24 70h72"/><text ${text} x="49" y="45">A</text><text ${text} x="72" y="45">B</text>`,
+        poisson: `<rect ${fill} x="22" y="52" width="9" height="12"/><rect ${fill} x="36" y="39" width="9" height="25"/><rect ${fill} x="50" y="27" width="9" height="37"/><rect ${fill} x="64" y="34" width="9" height="30"/><rect ${fill} x="78" y="48" width="9" height="16"/><line ${thin} x1="18" y1="64" x2="102" y2="64"/><text ${text} x="75" y="23">λ</text>`,
         hypothesis: `<line ${thin} x1="15" y1="62" x2="105" y2="62"/><path ${stroke} d="M18 62c14 0 16-34 42-34s28 34 42 34"/><path ${fill} d="M86 62c7-12 9-23 16-28v28Z"/><text ${text} x="92" y="28">p</text>`,
         confidence: `<path ${faint} d="M18 58c14 0 16-31 42-31s28 31 42 31"/><line ${stroke} x1="26" y1="58" x2="94" y2="58"/><path ${thin} d="M26 48v20M94 48v20"/><text ${text} x="60" y="24">CI</text>`,
         markov: `<circle ${thin} cx="31" cy="31" r="12"/><circle ${thin} cx="83" cy="31" r="12"/><circle ${thin} cx="57" cy="61" r="12"/><path ${thin} d="M43 28c10-7 18-7 28 0M78 43L64 53M45 53L35 43"/><text ${text} x="57" y="18">T</text>`,
-        integration: `<line ${thin} x1="18" y1="63" x2="105" y2="63"/><path ${stroke} d="M20 60c18-35 35-38 50-15 10 16 20 19 35 8"/><path ${fill} d="M28 63V43h16v20ZM47 63V35h16v28ZM66 63V42h16v21Z"/><text ${text} x="83" y="25">int</text>`,
+        integration: `<line ${thin} x1="18" y1="63" x2="105" y2="63"/><path ${stroke} d="M20 60c18-35 35-38 50-15 10 16 20 19 35 8"/><path ${fill} d="M28 63V43h16v20ZM47 63V35h16v28ZM66 63V42h16v21Z"/><text ${text} x="83" y="25">∫</text>`,
         "slope-euler": `<path ${faint} d="M20 25l14-6M46 24l14 6M74 25l16-4M22 45l13 7M48 45l16-2M77 45l12 9M20 65l17 0M47 65l11-8M76 65l15-3"/><path ${stroke} d="M19 66l22-13 22-7 28-14"/><circle ${solid} cx="19" cy="66" r="4"/><circle ${solid} cx="41" cy="53" r="4"/><circle ${solid} cx="63" cy="46" r="4"/>`,
         "phase-portraits": `<path ${thin} d="M62 41c20 2 24 27 3 31-25 5-44-18-35-39 9-23 46-24 58 0"/><path ${thin} d="M87 32l-12-1M87 32l-5-11"/><line ${faint} x1="60" y1="12" x2="60" y2="72"/><line ${faint} x1="22" y1="42" x2="100" y2="42"/><circle ${solid} cx="60" cy="42" r="4"/>`,
         "second-order": `<path ${stroke} d="M15 43c10-30 20-30 30 0s20 30 30 0 20-30 30 0"/><line ${faint} x1="15" y1="43" x2="108" y2="43"/><path ${thin} d="M25 62h70"/><text ${text} x="60" y="75">x''</text>`
@@ -1134,7 +1411,7 @@
 
     function renderIslands() {
       islandLayer.innerHTML = islands.map((island) => `
-        <button class="island" type="button" data-id="${island.id}" style="--x:${island.x};--y:${island.y};--mx:${mobileLayout[island.id][0]};--my:${mobileLayout[island.id][1]};--island:${island.color};">
+        <button class="island" type="button" data-id="${island.id}" aria-label="Open details for ${escapeHtml(island.points)} ${escapeHtml(island.title)}" aria-pressed="false" style="--x:${island.x};--y:${island.y};--mx:${mobileLayout[island.id][0]};--my:${mobileLayout[island.id][1]};--island:${island.color};">
           ${mathGraphic(island.id, "mini")}
           <span class="point">${escapeHtml(island.points)}</span>
           <span class="island-title">${escapeHtml(island.title)}</span>
@@ -1155,7 +1432,7 @@
           <strong>${escapeHtml(island.title)}</strong>
           <span>${escapeHtml(island.blurb)}</span>
           <div class="log-actions">
-            <a class="mini-link" href="${island.href}" data-open="${island.id}">Open applet</a>
+            <a class="mini-link" href="${escapeHtml(island.href)}" data-open="${island.id}">Open applet</a>
             <span class="status" data-status="${island.id}" hidden>Complete</span>
           </div>
         </article>
@@ -1185,8 +1462,8 @@
         <h2>${escapeHtml(island.title)}</h2>
         <p class="blurb">${escapeHtml(island.blurb)}</p>
         <div class="actions">
-          <a class="launch" href="${island.href}" id="launchLink">Open applet</a>
-          <button class="complete-button ${done ? "done" : ""}" type="button" id="completeButton">${done ? "Completed" : "Mark complete"}</button>
+          <a class="launch" href="${escapeHtml(island.href)}" id="launchLink">Open applet</a>
+          <button class="complete-button ${done ? "done" : ""}" type="button" id="completeButton" aria-pressed="${done ? "true" : "false"}">${done ? "Completed" : "Mark complete"}</button>
         </div>
         <div class="file-name">${escapeHtml(island.href)}</div>
       `;
@@ -1212,7 +1489,9 @@
     function selectIsland(id, scrollPanel) {
       selectedId = id;
       document.querySelectorAll(".island").forEach((button) => {
-        button.classList.toggle("selected", button.dataset.id === id);
+        const isSelected = button.dataset.id === id;
+        button.classList.toggle("selected", isSelected);
+        button.setAttribute("aria-pressed", String(isSelected));
       });
       renderSelected();
       if (scrollPanel && window.matchMedia("(max-width: 1020px)").matches) {
@@ -1238,10 +1517,18 @@
         element.classList.toggle("hidden", !visibleIds.has(element.dataset.id));
       });
 
-      visibleCount.textContent = `${visible.length} destinations shown`;
+      visibleCount.textContent = `${visible.length} of ${islands.length} destinations shown`;
+      emptyMessage.hidden = visible.length > 0;
 
       if (visible.length && !visibleIds.has(selectedId)) {
         selectIsland(visible[0].id, false);
+      }
+
+      if (!visible.length) {
+        selectedPanel.innerHTML = `
+          <div class="selected-graphic"><strong>No matching applets</strong></div>
+          <p class="blurb">Try a different search term, or switch the filter back to All.</p>
+        `;
       }
     }
 
@@ -1263,7 +1550,10 @@
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter;
-        filterButtons.forEach((item) => item.classList.toggle("active", item === button));
+        filterButtons.forEach((item) => {
+          item.classList.toggle("active", item === button);
+          item.setAttribute("aria-pressed", String(item === button));
+        });
         applyFilters();
       });
     });
@@ -1271,11 +1561,15 @@
     search.addEventListener("input", applyFilters);
 
     document.querySelector("#resetProgress").addEventListener("click", () => {
+      if (completed.size && !confirm("Reset all completion ticks?")) return;
       completed = new Set();
       saveProgress();
       renderSelected();
       updateProgress();
     });
+
+    totalTagline.textContent = `A syllabus map for ${islands.length} interactive applets.`;
+    filterButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.classList.contains("active"))));
 
     drawRoutes();
     renderIslands();
