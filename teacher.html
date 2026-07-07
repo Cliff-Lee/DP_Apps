@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IB AI Archipelago Teacher Dashboard</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5f6c7b;
+      --paper: #fffaf0;
+      --line: rgba(23, 32, 51, 0.16);
+      --dark: #172033;
+      --cream: #fffaf0;
+      --leaf: #65ad70;
+      --gold: #f3c35b;
+      --coral: #ef7e6b;
+      --sky: #7fc0e6;
+      --violet: #9f8ad9;
+      --shadow: 0 18px 40px rgba(22, 37, 64, 0.16);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(127, 192, 230, 0.24), transparent 30%),
+        radial-gradient(circle at 90% 5%, rgba(243, 195, 91, 0.25), transparent 26%),
+        #f6f1df;
+    }
+
+    button,
+    input,
+    select { font: inherit; }
+
+    .shell {
+      min-height: 100vh;
+      padding: clamp(16px, 3vw, 34px);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      max-width: 1440px;
+      margin: 0 auto 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 4rem);
+      line-height: 0.95;
+    }
+
+    h2, h3 { margin: 0; }
+
+    .tagline {
+      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .layout {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 250, 240, 0.9);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card.white { background: rgba(255, 255, 255, 0.92); }
+
+    .stack { display: grid; gap: 10px; }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    label {
+      color: var(--muted);
+      font-weight: 850;
+      font-size: 0.82rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--dark);
+      box-shadow: 0 0 0 3px rgba(23, 32, 51, 0.12);
+    }
+
+    button,
+    .link-button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    button:hover,
+    .link-button:hover {
+      transform: translateY(-1px);
+      background: #fff;
+      border-color: rgba(23, 32, 51, 0.32);
+    }
+
+    .primary {
+      background: var(--dark);
+      color: var(--cream);
+      border-color: var(--dark);
+    }
+
+    .primary:hover { background: #263047; }
+
+    .danger {
+      background: #fff4f2;
+      border-color: rgba(239, 126, 107, 0.5);
+      color: #9f3023;
+    }
+
+    .muted { color: var(--muted); }
+
+    .message {
+      min-height: 1.25em;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.92rem;
+    }
+
+    .main { display: grid; gap: 16px; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(1.55rem, 3vw, 2.6rem);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.84rem;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(120px, 170px) minmax(120px, 170px) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .table-wrap {
+      max-width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.88rem;
+    }
+
+    th,
+    td {
+      border-right: 1px solid rgba(23, 32, 51, 0.1);
+      border-bottom: 1px solid rgba(23, 32, 51, 0.1);
+      padding: 9px 8px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: #fffaf0;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      min-width: 190px;
+      text-align: left;
+      background: #fff;
+      font-weight: 900;
+    }
+
+    th:first-child {
+      z-index: 4;
+      background: #fffaf0;
+    }
+
+    .student-sub {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .status-cell.complete {
+      background: #e1f4d9;
+      color: #245f2a;
+      font-weight: 950;
+    }
+
+    .status-cell.opened {
+      background: #fff0c2;
+      color: #7d5706;
+      font-weight: 950;
+    }
+
+    .status-cell.empty { color: #a2a9b3; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .class-list { display: grid; gap: 8px; }
+
+    .class-chip {
+      width: 100%;
+      justify-content: space-between;
+      border-radius: 14px;
+      text-align: left;
+      padding: 10px 12px;
+      height: auto;
+    }
+
+    .class-chip small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .student-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .meter {
+      height: 9px;
+      background: rgba(23, 32, 51, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--leaf), var(--gold), var(--coral));
+      width: 0%;
+    }
+
+    .footer-note {
+      max-width: 1440px;
+      margin: 16px auto 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .topbar { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { padding: 12px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      th:first-child,
+      td:first-child { min-width: 145px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div>
+        <h1>Teacher Dashboard</h1>
+        <div class="tagline">View class progress for the IB AI Archipelago applets.</div>
+      </div>
+      <a class="link-button" href="index.html">Open student map</a>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="card white stack" aria-label="Teacher login">
+          <h2>Teacher login</h2>
+          <label for="emailInput">Email</label>
+          <input id="emailInput" type="email" autocomplete="email" placeholder="teacher@email.com">
+          <label for="passwordInput">Password</label>
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Password">
+          <div class="row">
+            <button class="primary" id="loginButton" type="button">Log in</button>
+            <button class="danger" id="logoutButton" type="button">Log out</button>
+          </div>
+          <p class="message" id="loginMessage">Not logged in.</p>
+        </section>
+
+        <section class="card stack" aria-label="Create class">
+          <h2>Create a class</h2>
+          <label for="newClassName">Class name</label>
+          <input id="newClassName" placeholder="e.g. Grade 12 AI">
+          <label for="newClassCode">Class code</label>
+          <div class="row" style="display:grid; grid-template-columns: 1fr auto;">
+            <input id="newClassCode" placeholder="e.g. AI2026">
+            <button id="randomCodeButton" type="button">Random</button>
+          </div>
+          <button class="primary" id="createClassButton" type="button">Create class</button>
+          <p class="message" id="createClassMessage"></p>
+        </section>
+
+        <section class="card stack" aria-label="Load class">
+          <h2>Load progress</h2>
+          <label for="classCodeInput">Class code</label>
+          <input id="classCodeInput" value="AI2026" placeholder="e.g. AI2026">
+          <button class="primary" id="loadClassButton" type="button">Load class</button>
+          <p class="message" id="classMessage"></p>
+        </section>
+
+        <section class="card stack" aria-label="My classes">
+          <div class="row" style="justify-content:space-between;">
+            <h2>My classes</h2>
+            <button id="refreshClassesButton" type="button">Refresh</button>
+          </div>
+          <div class="class-list" id="classList"><p class="message">Log in to list classes.</p></div>
+        </section>
+      </aside>
+
+      <section class="main">
+        <section class="summary-grid" aria-label="Class summary">
+          <div class="stat"><strong id="studentsCount">0</strong><span>students</span></div>
+          <div class="stat"><strong id="averageComplete">0%</strong><span>average complete</span></div>
+          <div class="stat"><strong id="completedCount">0</strong><span>completed applets</span></div>
+          <div class="stat"><strong id="lastActive">-</strong><span>last active</span></div>
+        </section>
+
+        <section class="card white stack">
+          <div class="toolbar">
+            <div>
+              <label for="searchInput">Search student</label>
+              <input id="searchInput" placeholder="Type a nickname">
+            </div>
+            <div>
+              <label for="topicFilter">Topic</label>
+              <select id="topicFilter">
+                <option value="all">All topics</option>
+                <option value="1">Topic 1</option>
+                <option value="2">Topic 2</option>
+                <option value="3">Topic 3</option>
+                <option value="4">Topic 4</option>
+                <option value="5">Topic 5</option>
+              </select>
+            </div>
+            <div>
+              <label for="levelFilter">Level</label>
+              <select id="levelFilter">
+                <option value="all">All levels</option>
+                <option value="SL">SL</option>
+                <option value="AHL">AHL</option>
+              </select>
+            </div>
+            <button id="exportButton" type="button">Export CSV</button>
+          </div>
+        </section>
+
+        <section class="card white stack">
+          <div class="row" style="justify-content:space-between; align-items:end;">
+            <div>
+              <h2 id="tableTitle">Progress table</h2>
+              <p class="message" id="tableMessage">Load a class to see progress.</p>
+            </div>
+            <span class="pill" id="appletCount">36 applets</span>
+          </div>
+          <div class="table-wrap" id="tableWrap">
+            <table>
+              <tbody><tr><td>Load a class to begin.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card white stack">
+          <h2>Student summary</h2>
+          <div class="details-grid" id="studentCards">
+            <p class="message">Student cards will appear here after loading a class.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <p class="footer-note">
+      Tip: if login fails on GitHub Pages, add your GitHub Pages domain in Firebase Authentication → Settings → Authorized domains.
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      setDoc,
+      serverTimestamp,
+      query,
+      where,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7xaB9D_ELuFmLgovj5KfoluOx8Pop3hQ",
+      authDomain: "ib-ai-applets.firebaseapp.com",
+      projectId: "ib-ai-applets",
+      storageBucket: "ib-ai-applets.firebasestorage.app",
+      messagingSenderId: "231854174766",
+      appId: "1:231854174766:web:f406fe521804c78777e5bf"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+
+    const applets = [
+      {
+            "id": "scientific-notation",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "points": "SL 1.1",
+            "title": "Scientific notation",
+            "href": "sl_1_1_scientific_notation_resource(1).html"
+      },
+      {
+            "id": "arithmetic",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "points": "SL 1.2",
+            "title": "Arithmetic sequences and series",
+            "href": "sl-1-02-arithmetic-sequences-series.html"
+      },
+      {
+            "id": "geometric",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL + AHL",
+            "points": "SL 1.3 / AHL 1.11",
+            "title": "Geometric sequences and series",
+            "href": "sl-1-03-ahl-1-11-geometric-sequences-series.html"
+      },
+      {
+            "id": "finance",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "points": "SL 1.4 / SL 1.7",
+            "title": "Financial mathematics",
+            "href": "sl-1-04-sl-1-07-financial-mathematics.html"
+      },
+      {
+            "id": "exponents",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL + AHL",
+            "points": "SL 1.5 / AHL 1.10",
+            "title": "Exponents and logarithms",
+            "href": "sl-1-05-ahl-1-10-exponents-logarithms.html"
+      },
+      {
+            "id": "accuracy",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "points": "SL 1.6",
+            "title": "Accuracy and error",
+            "href": "sl-1-06-accuracy-approximation-error.html"
+      },
+      {
+            "id": "complex",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "points": "AHL 1.12 / AHL 1.13",
+            "title": "Complex numbers",
+            "href": "ahl-1-12-ahl-1-13-complex-numbers.html"
+      },
+      {
+            "id": "matrices",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "points": "AHL 1.14",
+            "title": "Matrices",
+            "href": "ahl-1-14-matrices.html"
+      },
+      {
+            "id": "eigen",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "points": "AHL 1.15",
+            "title": "Eigenvalues and eigenvectors",
+            "href": "ahl-1-15-eigenvalues-eigenvectors.html"
+      },
+      {
+            "id": "diagonalisation",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "points": "AHL 1.15",
+            "title": "Matrix diagonalisation",
+            "href": "ahl-1-15-matrix-diagonalisation.html"
+      },
+      {
+            "id": "straight-lines",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "points": "SL 2.1",
+            "title": "Straight lines",
+            "href": "sl_2_1_straight_lines_resource.html"
+      },
+      {
+            "id": "functions-inverses",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "points": "SL 2.2",
+            "title": "Functions and inverse functions",
+            "href": "sl_2_2_functions_resource.html"
+      },
+      {
+            "id": "graphs-functions",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "points": "SL 2.3",
+            "title": "Graphs of functions",
+            "href": "sl_2_3_graphs_of_functions_resource(1).html"
+      },
+      {
+            "id": "key-features",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "points": "SL 2.4",
+            "title": "Key features of graphs",
+            "href": "sl_2_4_key_features_graphs_resource(2).html"
+      },
+      {
+            "id": "geometry-3d",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "points": "SL 3.1",
+            "title": "3D geometry",
+            "href": "sl_3_1_3d_geometry_resource(1).html"
+      },
+      {
+            "id": "trig",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "points": "SL 3.2",
+            "title": "Triangle trigonometry",
+            "href": "sl-3-02-triangle-trigonometry.html"
+      },
+      {
+            "id": "arcs-radians",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL + AHL",
+            "points": "SL 3.4 / AHL 3.7",
+            "title": "Arcs, sectors and radians",
+            "href": "sl_3_4_ahl_3_7_arcs_sectors_radians_resource(1).html"
+      },
+      {
+            "id": "voronoi",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "points": "SL 3.6",
+            "title": "Voronoi diagrams",
+            "href": "sl-3-06-voronoi-diagrams.html"
+      },
+      {
+            "id": "affine",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.9",
+            "title": "Affine transformations",
+            "href": "ahl-3-09-affine-transformations.html"
+      },
+      {
+            "id": "vectors",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.10-3.13",
+            "title": "Vectors",
+            "href": "ahl-3-10-ahl-3-13-vectors.html"
+      },
+      {
+            "id": "graph-basics",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.14",
+            "title": "Graph theory basics",
+            "href": "ahl-3-14-graph-theory-basics.html"
+      },
+      {
+            "id": "walks",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.15",
+            "title": "Adjacency matrices and walks",
+            "href": "ahl-3-15-adjacency-matrices-walks.html"
+      },
+      {
+            "id": "graph-structure",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.16",
+            "title": "Graph structure algorithms",
+            "href": "ahl-3-16-graph-structure-algorithms.html"
+      },
+      {
+            "id": "routes",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "points": "AHL 3.16",
+            "title": "Route optimisation",
+            "href": "ahl-3-16-route-optimisation.html"
+      },
+      {
+            "id": "data-sampling-outliers",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "points": "SL 4.1",
+            "title": "Data, sampling and outliers",
+            "href": "sl_4_1_data_sampling_outliers_resource(2).html"
+      },
+      {
+            "id": "data-presentation-statistics",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "points": "SL 4.2-4.3",
+            "title": "Data presentation and descriptive statistics",
+            "href": "sl_4_2_4_3_data_presentation_statistics_resource(2).html"
+      },
+      {
+            "id": "probability",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "points": "SL 4.5",
+            "title": "Probability",
+            "href": "sl_4_5_probability_resource(1).html"
+      },
+      {
+            "id": "probability-representations",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "points": "SL 4.6",
+            "title": "Probability representations",
+            "href": "sl_4_6_probability_representations_applet(3).html"
+      },
+      {
+            "id": "hypothesis",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL + AHL",
+            "points": "SL 4.11 / AHL 4.18",
+            "title": "Hypothesis testing",
+            "href": "sl-4-11-ahl-4-18-hypothesis-testing.html"
+      },
+      {
+            "id": "confidence",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "points": "AHL 4.16",
+            "title": "Confidence intervals",
+            "href": "ahl-4-16-confidence-intervals.html"
+      },
+      {
+            "id": "poisson",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "points": "AHL 4.17",
+            "title": "Poisson distribution",
+            "href": "ahl_4_17_poisson_distribution_resource(2).html"
+      },
+      {
+            "id": "markov",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "points": "AHL 4.19",
+            "title": "Markov chains",
+            "href": "ahl-4-19-markov-chains.html"
+      },
+      {
+            "id": "integration",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "points": "SL 5.5 / SL 5.8",
+            "title": "Integration and trapezoidal rule",
+            "href": "sl-5-05-sl-5-08-integration-trapezoidal-rule.html"
+      },
+      {
+            "id": "slope-euler",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "points": "AHL 5.15 / AHL 5.16",
+            "title": "Slope fields and Euler's method",
+            "href": "ahl-5-15-ahl-5-16-slope-fields-euler-method.html"
+      },
+      {
+            "id": "phase-portraits",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "points": "AHL 5.17",
+            "title": "Coupled differential equations",
+            "href": "ahl-5-17-coupled-differential-equations-phase-portraits.html"
+      },
+      {
+            "id": "second-order",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "points": "AHL 5.18",
+            "title": "Second-order differential equations",
+            "href": "ahl-5-18-second-order-differential-equations.html"
+      }
+];
+
+    let currentClassCode = "";
+    let currentClassName = "";
+    let currentStudents = [];
+    let lastCsv = "";
+
+    const $ = (selector) => document.querySelector(selector);
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function cleanClassCode(value) {
+      return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
+    }
+
+    function formatTimestamp(value) {
+      if (!value) return "-";
+      const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+      if (Number.isNaN(date.getTime())) return "-";
+      return date.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function makeRandomCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "AI";
+      for (let i = 0; i < 4; i += 1) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return code;
+    }
+
+    function getVisibleApplets() {
+      const topic = $("#topicFilter").value;
+      const level = $("#levelFilter").value;
+      return applets.filter((applet) => {
+        const topicMatch = topic === "all" || applet.topic === topic;
+        const levelMatch = level === "all" || applet.level.includes(level);
+        return topicMatch && levelMatch;
+      });
+    }
+
+    function getVisibleStudents() {
+      const term = $("#searchInput").value.trim().toLowerCase();
+      if (!term) return currentStudents;
+      return currentStudents.filter((student) => student.nickname.toLowerCase().includes(term));
+    }
+
+    function completedCountForStudent(student) {
+      return applets.filter((applet) => student.progress[applet.id]?.completed).length;
+    }
+
+    function lastSeenForStudent(student) {
+      const times = [student.lastSeen, ...Object.values(student.progress).map((item) => item.lastSeen)].filter(Boolean);
+      let best = null;
+      times.forEach((value) => {
+        const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+        if (!Number.isNaN(date.getTime()) && (!best || date > best)) best = date;
+      });
+      return best;
+    }
+
+    async function login() {
+      const email = $("#emailInput").value.trim();
+      const password = $("#passwordInput").value;
+      $("#loginMessage").textContent = "Logging in...";
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        $("#passwordInput").value = "";
+      } catch (error) {
+        console.error(error);
+        $("#loginMessage").textContent = `Login failed: ${error.message}`;
+      }
+    }
+
+    async function logoutTeacher() {
+      await signOut(auth);
+      currentStudents = [];
+      currentClassCode = "";
+      currentClassName = "";
+      renderDashboard();
+      $("#classList").innerHTML = `<p class="message">Log in to list classes.</p>`;
+    }
+
+    async function createClass() {
+      const user = auth.currentUser;
+      const message = $("#createClassMessage");
+      if (!user) {
+        message.textContent = "Log in first.";
+        return;
+      }
+
+      const className = $("#newClassName").value.trim() || "Untitled class";
+      const classCode = cleanClassCode($("#newClassCode").value || makeRandomCode());
+
+      if (!classCode) {
+        message.textContent = "Enter a class code.";
+        return;
+      }
+
+      message.textContent = "Creating class...";
+      try {
+        const classRef = doc(db, "classes", classCode);
+        const existing = await getDoc(classRef);
+        if (existing.exists()) {
+          message.textContent = "That class code already exists. Choose another.";
+          return;
+        }
+
+        await setDoc(classRef, {
+          name: className,
+          teacherUid: user.uid,
+          createdAt: serverTimestamp()
+        });
+
+        $("#classCodeInput").value = classCode;
+        message.textContent = `Created ${classCode}. Students can now join with this code.`;
+        await listMyClasses();
+      } catch (error) {
+        console.error(error);
+        message.textContent = `Could not create class: ${error.message}`;
+      }
+    }
+
+    async function listMyClasses() {
+      const user = auth.currentUser;
+      const target = $("#classList");
+      if (!user) {
+        target.innerHTML = `<p class="message">Log in to list classes.</p>`;
+        return;
+      }
+
+      target.innerHTML = `<p class="message">Loading classes...</p>`;
+      try {
+        const classesQuery = query(collection(db, "classes"), where("teacherUid", "==", user.uid));
+        const snapshot = await getDocs(classesQuery);
+        const classes = [];
+        snapshot.forEach((classDoc) => classes.push({ id: classDoc.id, ...classDoc.data() }));
+        classes.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+        if (!classes.length) {
+          target.innerHTML = `<p class="message">No classes found. Create one or check that your teacher UID matches.</p>`;
+          return;
+        }
+
+        target.innerHTML = classes.map((item) => `
+          <button class="class-chip" type="button" data-class-code="${escapeHtml(item.id)}">
+            <span>${escapeHtml(item.name || "Untitled class")}<small>Code: ${escapeHtml(item.id)}</small></span>
+            <span>Load</span>
+          </button>
+        `).join("");
+
+        target.querySelectorAll("[data-class-code]").forEach((button) => {
+          button.addEventListener("click", () => {
+            $("#classCodeInput").value = button.dataset.classCode;
+            loadClassProgress();
+          });
+        });
+      } catch (error) {
+        console.error(error);
+        target.innerHTML = `<p class="message">Could not list classes: ${escapeHtml(error.message)}</p>`;
+      }
+    }
+
+    async function loadClassProgress() {
+      const classCode = cleanClassCode($("#classCodeInput").value);
+      const message = $("#classMessage");
+
+      if (!auth.currentUser) {
+        message.textContent = "Log in first.";
+        return;
+      }
+
+      if (!classCode) {
+        message.textContent = "Enter a class code.";
+        return;
+      }
+
+      message.textContent = "Loading progress...";
+      $("#tableMessage").textContent = "Loading progress...";
+
+      try {
+        const classRef = doc(db, "classes", classCode);
+        const classSnap = await getDoc(classRef);
+        if (!classSnap.exists()) {
+          message.textContent = "Class code not found.";
+          return;
+        }
+
+        currentClassCode = classCode;
+        currentClassName = classSnap.data().name || classCode;
+
+        const studentsSnap = await getDocs(collection(db, "classes", classCode, "students"));
+        const students = [];
+
+        for (const studentDoc of studentsSnap.docs) {
+          const studentData = studentDoc.data();
+          const progressSnap = await getDocs(collection(db, "classes", classCode, "students", studentDoc.id, "progress"));
+          const progress = {};
+          progressSnap.forEach((progressDoc) => {
+            progress[progressDoc.id] = progressDoc.data();
+          });
+
+          students.push({
+            id: studentDoc.id,
+            nickname: studentData.nickname || "Unnamed student",
+            joinedAt: studentData.joinedAt || null,
+            lastSeen: studentData.lastSeen || null,
+            progress
+          });
+        }
+
+        students.sort((a, b) => a.nickname.localeCompare(b.nickname));
+        currentStudents = students;
+        renderDashboard();
+        message.textContent = `Loaded ${students.length} students from ${currentClassName} (${classCode}).`;
+      } catch (error) {
+        console.error(error);
+        message.textContent = `Could not load class: ${error.message}`;
+        $("#tableMessage").textContent = "Could not load class. Check login, teacher UID, class code, and Firestore rules.";
+      }
+    }
+
+    function renderDashboard() {
+      renderSummary();
+      renderTable();
+      renderStudentCards();
+    }
+
+    function renderSummary() {
+      const students = currentStudents;
+      const totalSlots = students.length * applets.length;
+      const totalCompleted = students.reduce((sum, student) => sum + completedCountForStudent(student), 0);
+      const average = totalSlots ? Math.round((totalCompleted / totalSlots) * 100) : 0;
+
+      const lastDates = students.map(lastSeenForStudent).filter(Boolean).sort((a, b) => b - a);
+
+      $("#studentsCount").textContent = students.length;
+      $("#averageComplete").textContent = `${average}%`;
+      $("#completedCount").textContent = totalCompleted;
+      $("#lastActive").textContent = lastDates.length ? formatTimestamp(lastDates[0]) : "-";
+      $("#appletCount").textContent = `${getVisibleApplets().length} of ${applets.length} applets`;
+    }
+
+    function renderTable() {
+      const visibleApplets = getVisibleApplets();
+      const students = getVisibleStudents();
+      const tableWrap = $("#tableWrap");
+      $("#tableTitle").textContent = currentClassCode ? `${currentClassName} progress` : "Progress table";
+
+      if (!currentClassCode) {
+        tableWrap.innerHTML = `<table><tbody><tr><td>Load a class to begin.</td></tr></tbody></table>`;
+        $("#tableMessage").textContent = "Load a class to see progress.";
+        lastCsv = "";
+        return;
+      }
+
+      if (!students.length) {
+        tableWrap.innerHTML = `<table><tbody><tr><td>No matching students yet.</td></tr></tbody></table>`;
+        $("#tableMessage").textContent = "No students match the current filters.";
+        lastCsv = "";
+        return;
+      }
+
+      const header = `
+        <tr>
+          <th>Student</th>
+          ${visibleApplets.map((applet) => `<th title="${escapeHtml(applet.title)}">${escapeHtml(applet.points)}<br>${escapeHtml(applet.title)}</th>`).join("")}
+          <th>Total</th>
+          <th>Last active</th>
+        </tr>
+      `;
+
+      const rows = students.map((student) => {
+        const cells = visibleApplets.map((applet) => {
+          const item = student.progress[applet.id];
+          if (item?.completed) return `<td class="status-cell complete" title="${escapeHtml(formatTimestamp(item.completedAt || item.lastSeen))}">✓</td>`;
+          if (item?.opened) return `<td class="status-cell opened" title="${escapeHtml(formatTimestamp(item.lastSeen))}">opened</td>`;
+          return `<td class="status-cell empty">-</td>`;
+        }).join("");
+
+        const total = visibleApplets.filter((applet) => student.progress[applet.id]?.completed).length;
+        const lastSeen = lastSeenForStudent(student);
+
+        return `
+          <tr>
+            <td>${escapeHtml(student.nickname)}<span class="student-sub">${total}/${visibleApplets.length} visible complete</span></td>
+            ${cells}
+            <td><strong>${total}/${visibleApplets.length}</strong></td>
+            <td>${lastSeen ? escapeHtml(formatTimestamp(lastSeen)) : "-"}</td>
+          </tr>
+        `;
+      }).join("");
+
+      tableWrap.innerHTML = `
+        <table>
+          <thead>${header}</thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      $("#tableMessage").textContent = `${students.length} students shown. ✓ = completed, opened = visited but not marked complete.`;
+      makeCsv(students, visibleApplets);
+    }
+
+    function renderStudentCards() {
+      const target = $("#studentCards");
+      const students = getVisibleStudents();
+
+      if (!currentClassCode) {
+        target.innerHTML = `<p class="message">Student cards will appear here after loading a class.</p>`;
+        return;
+      }
+
+      if (!students.length) {
+        target.innerHTML = `<p class="message">No matching students.</p>`;
+        return;
+      }
+
+      target.innerHTML = students.map((student) => {
+        const done = completedCountForStudent(student);
+        const percent = Math.round((done / applets.length) * 100);
+        const missing = applets
+          .filter((applet) => !student.progress[applet.id]?.completed)
+          .slice(0, 5)
+          .map((applet) => applet.points)
+          .join(", ") || "None";
+
+        return `
+          <article class="student-card">
+            <h3>${escapeHtml(student.nickname)}</h3>
+            <div class="meter" aria-hidden="true"><span style="width:${percent}%"></span></div>
+            <span class="muted">${done}/${applets.length} complete · ${percent}%</span>
+            <span class="muted">Last active: ${escapeHtml(formatTimestamp(lastSeenForStudent(student)))}</span>
+            <span class="muted">Next missing: ${escapeHtml(missing)}</span>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function makeCsv(students, visibleApplets) {
+      const rows = [];
+      rows.push(["Class code", currentClassCode]);
+      rows.push(["Class name", currentClassName]);
+      rows.push([]);
+      rows.push(["Student", ...visibleApplets.map((applet) => `${applet.points} - ${applet.title}`), "Total completed", "Last active"]);
+
+      students.forEach((student) => {
+        const row = [student.nickname];
+        visibleApplets.forEach((applet) => {
+          const item = student.progress[applet.id];
+          row.push(item?.completed ? "completed" : item?.opened ? "opened" : "");
+        });
+        row.push(visibleApplets.filter((applet) => student.progress[applet.id]?.completed).length);
+        row.push(formatTimestamp(lastSeenForStudent(student)));
+        rows.push(row);
+      });
+
+      lastCsv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    }
+
+    function exportCsv() {
+      if (!lastCsv) {
+        alert("Load a class first.");
+        return;
+      }
+      const blob = new Blob([lastCsv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${currentClassCode || "class"}-progress.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    $("#loginButton").addEventListener("click", login);
+    $("#logoutButton").addEventListener("click", logoutTeacher);
+    $("#loadClassButton").addEventListener("click", loadClassProgress);
+    $("#createClassButton").addEventListener("click", createClass);
+    $("#refreshClassesButton").addEventListener("click", listMyClasses);
+    $("#randomCodeButton").addEventListener("click", () => {
+      $("#newClassCode").value = makeRandomCode();
+    });
+    $("#exportButton").addEventListener("click", exportCsv);
+    $("#searchInput").addEventListener("input", renderDashboard);
+    $("#topicFilter").addEventListener("change", renderDashboard);
+    $("#levelFilter").addEventListener("change", renderDashboard);
+
+    $("#passwordInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") login();
+    });
+    $("#classCodeInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") loadClassProgress();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        $("#loginMessage").textContent = `Logged in as ${user.email || user.uid}.`;
+        await listMyClasses();
+      } else {
+        $("#loginMessage").textContent = "Not logged in.";
+      }
+    });
+
+    renderDashboard();
+  </script>
+</body>
+</html>
