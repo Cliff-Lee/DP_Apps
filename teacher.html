@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -339,6 +340,56 @@
       width: 0%;
     }
 
+
+
+    .mcq-cell {
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .mcq-none {
+      background: #f5f6f8;
+      color: #9aa3af;
+    }
+
+    .mcq-limited {
+      background: #eef8ff;
+      color: #38627d;
+    }
+
+    .mcq-low {
+      background: #fff0ed;
+      color: #8f3024;
+    }
+
+    .mcq-mid {
+      background: #fff0c2;
+      color: #7d5706;
+    }
+
+    .mcq-good {
+      background: #e1f4d9;
+      color: #245f2a;
+    }
+
+    .mcq-strong {
+      background: #e8f1ff;
+      color: #244f7b;
+    }
+
+    .weak-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .weak-card strong {
+      font-size: 1.05rem;
+    }
+
     .footer-note {
       max-width: 1440px;
       margin: 16px auto 0;
@@ -373,6 +424,7 @@
       </div>
       <div class="row" style="justify-content:flex-end;">
         <a class="link-button" href="index.html">Open student map</a>
+        <a class="link-button" href="mcq_practice.html">Open MCQ practice</a>
         <a class="link-button primary" href="dp_ai_questionbank.html">Open question bank</a>
       </div>
     </header>
@@ -478,6 +530,36 @@
           <h2>Student summary</h2>
           <div class="details-grid" id="studentCards">
             <p class="message">Student cards will appear here after loading a class.</p>
+          </div>
+        </section>
+
+        <section class="card white stack" aria-label="MCQ performance">
+          <div class="row" style="justify-content:space-between; align-items:end;">
+            <div>
+              <h2>MCQ performance</h2>
+              <p class="message" id="mcqTableMessage">Load a class to see MCQ practice data.</p>
+            </div>
+            <span class="pill" id="mcqPointCount">0 syllabus points</span>
+          </div>
+
+          <section class="summary-grid" aria-label="MCQ summary">
+            <div class="stat"><strong id="mcqAttemptsCount">0</strong><span>MCQ attempts</span></div>
+            <div class="stat"><strong id="mcqAverageAccuracy">-</strong><span>MCQ average accuracy</span></div>
+            <div class="stat"><strong id="mcqActiveStudents">0</strong><span>active MCQ students</span></div>
+            <div class="stat"><strong id="mcqWeakestPoint">-</strong><span>weakest visible point</span></div>
+          </section>
+
+          <div class="table-wrap" id="mcqTableWrap">
+            <table>
+              <tbody><tr><td>Load a class to begin.</td></tr></tbody>
+            </table>
+          </div>
+
+          <div>
+            <h3>Class weak areas</h3>
+            <div class="details-grid" id="mcqWeakCards">
+              <p class="message">Weak areas will appear after students practise MCQs.</p>
+            </div>
           </div>
         </section>
       </section>
@@ -849,6 +931,712 @@
       }
 ];
 
+    const mcqSyllabus = [
+      {
+            "id": "sl-1-1",
+            "label": "SL 1.1",
+            "title": "Scientific notation",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "scientific"
+      },
+      {
+            "id": "sl-1-2",
+            "label": "SL 1.2",
+            "title": "Arithmetic sequences and series",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "arithmetic"
+      },
+      {
+            "id": "sl-1-3",
+            "label": "SL 1.3",
+            "title": "Geometric sequences and series",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "geometric"
+      },
+      {
+            "id": "sl-1-4",
+            "label": "SL 1.4",
+            "title": "Financial applications: compound interest and depreciation",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "finance"
+      },
+      {
+            "id": "sl-1-5",
+            "label": "SL 1.5",
+            "title": "Integer exponents and logarithms",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "exponents"
+      },
+      {
+            "id": "sl-1-6",
+            "label": "SL 1.6",
+            "title": "Approximation, upper and lower bounds, percentage error",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "accuracy"
+      },
+      {
+            "id": "sl-1-7",
+            "label": "SL 1.7",
+            "title": "Financial mathematics: loans, annuities and repayments",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "annuity"
+      },
+      {
+            "id": "sl-1-8",
+            "label": "SL 1.8",
+            "title": "Technology for systems and polynomial equations",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "SL",
+            "skill": "systems"
+      },
+      {
+            "id": "ahl-1-9",
+            "label": "AHL 1.9",
+            "title": "Laws of logarithms",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "logs"
+      },
+      {
+            "id": "ahl-1-10",
+            "label": "AHL 1.10",
+            "title": "Rational exponents",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "rationalExp"
+      },
+      {
+            "id": "ahl-1-11",
+            "label": "AHL 1.11",
+            "title": "Infinite geometric series",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "infiniteGeo"
+      },
+      {
+            "id": "ahl-1-12",
+            "label": "AHL 1.12",
+            "title": "Complex numbers in Cartesian form",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "complexCart"
+      },
+      {
+            "id": "ahl-1-13",
+            "label": "AHL 1.13",
+            "title": "Polar form, powers and roots of complex numbers",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "complexPolar"
+      },
+      {
+            "id": "ahl-1-14",
+            "label": "AHL 1.14",
+            "title": "Matrices and matrix operations",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "matrices"
+      },
+      {
+            "id": "ahl-1-15",
+            "label": "AHL 1.15",
+            "title": "Eigenvalues, eigenvectors and diagonalisation",
+            "topic": "1",
+            "group": "Number and algebra",
+            "level": "AHL",
+            "skill": "eigen"
+      },
+      {
+            "id": "sl-2-1",
+            "label": "SL 2.1",
+            "title": "Linear functions and equations of straight lines",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "lines"
+      },
+      {
+            "id": "sl-2-2",
+            "label": "SL 2.2",
+            "title": "Functions, domain, range and inverse functions",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "functions"
+      },
+      {
+            "id": "sl-2-3",
+            "label": "SL 2.3",
+            "title": "Graphs of functions",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "graphs"
+      },
+      {
+            "id": "sl-2-4",
+            "label": "SL 2.4",
+            "title": "Key features of graphs",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "keyFeatures"
+      },
+      {
+            "id": "sl-2-5",
+            "label": "SL 2.5",
+            "title": "Modelling with linear, quadratic and exponential functions",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "modelsBasic"
+      },
+      {
+            "id": "sl-2-6",
+            "label": "SL 2.6",
+            "title": "Modelling skills and parameter interpretation",
+            "topic": "2",
+            "group": "Functions",
+            "level": "SL",
+            "skill": "modellingSkills"
+      },
+      {
+            "id": "ahl-2-7",
+            "label": "AHL 2.7",
+            "title": "Composite and inverse functions",
+            "topic": "2",
+            "group": "Functions",
+            "level": "AHL",
+            "skill": "composites"
+      },
+      {
+            "id": "ahl-2-8",
+            "label": "AHL 2.8",
+            "title": "Transformations of graphs",
+            "topic": "2",
+            "group": "Functions",
+            "level": "AHL",
+            "skill": "graphTransforms"
+      },
+      {
+            "id": "ahl-2-9",
+            "label": "AHL 2.9",
+            "title": "Further models: exponential, logarithmic, sinusoidal and logistic",
+            "topic": "2",
+            "group": "Functions",
+            "level": "AHL",
+            "skill": "advancedModels"
+      },
+      {
+            "id": "ahl-2-10",
+            "label": "AHL 2.10",
+            "title": "Logarithmic scaling and linearisation",
+            "topic": "2",
+            "group": "Functions",
+            "level": "AHL",
+            "skill": "logScale"
+      },
+      {
+            "id": "sl-3-1",
+            "label": "SL 3.1",
+            "title": "3D geometry, volume and surface area",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "geometry3d"
+      },
+      {
+            "id": "sl-3-2",
+            "label": "SL 3.2",
+            "title": "Right and non-right triangle trigonometry",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "trig"
+      },
+      {
+            "id": "sl-3-3",
+            "label": "SL 3.3",
+            "title": "Applications of trigonometry, bearings and elevation",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "trigApplications"
+      },
+      {
+            "id": "sl-3-4",
+            "label": "SL 3.4",
+            "title": "Arcs and sectors in degrees",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "arcSectorDegrees"
+      },
+      {
+            "id": "sl-3-5",
+            "label": "SL 3.5",
+            "title": "Perpendicular bisectors",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "perpendicularBisector"
+      },
+      {
+            "id": "sl-3-6",
+            "label": "SL 3.6",
+            "title": "Voronoi diagrams",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "SL",
+            "skill": "voronoi"
+      },
+      {
+            "id": "ahl-3-7",
+            "label": "AHL 3.7",
+            "title": "Radians, arc length and sector area",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "radians"
+      },
+      {
+            "id": "ahl-3-8",
+            "label": "AHL 3.8",
+            "title": "Unit circle, trigonometric identities and equations",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "unitCircle"
+      },
+      {
+            "id": "ahl-3-9",
+            "label": "AHL 3.9",
+            "title": "Matrix and affine transformations",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "affine"
+      },
+      {
+            "id": "ahl-3-10",
+            "label": "AHL 3.10",
+            "title": "Vector concepts, operations and magnitude",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "vectorBasics"
+      },
+      {
+            "id": "ahl-3-11",
+            "label": "AHL 3.11",
+            "title": "Vector equations of lines",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "vectorLine"
+      },
+      {
+            "id": "ahl-3-12",
+            "label": "AHL 3.12",
+            "title": "Vector kinematics",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "vectorKinematics"
+      },
+      {
+            "id": "ahl-3-13",
+            "label": "AHL 3.13",
+            "title": "Scalar product, vector product and angles",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "vectorProducts"
+      },
+      {
+            "id": "ahl-3-14",
+            "label": "AHL 3.14",
+            "title": "Graph theory terminology",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "graphTerms"
+      },
+      {
+            "id": "ahl-3-15",
+            "label": "AHL 3.15",
+            "title": "Adjacency matrices and walks",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "adjacency"
+      },
+      {
+            "id": "ahl-3-16",
+            "label": "AHL 3.16",
+            "title": "Graph algorithms and route optimisation",
+            "topic": "3",
+            "group": "Geometry and trigonometry",
+            "level": "AHL",
+            "skill": "graphAlgorithms"
+      },
+      {
+            "id": "sl-4-1",
+            "label": "SL 4.1",
+            "title": "Sampling, data types and outliers",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "sampling"
+      },
+      {
+            "id": "sl-4-2",
+            "label": "SL 4.2",
+            "title": "Data presentation",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "dataPresentation"
+      },
+      {
+            "id": "sl-4-3",
+            "label": "SL 4.3",
+            "title": "Measures of central tendency and dispersion",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "descriptiveStats"
+      },
+      {
+            "id": "sl-4-4",
+            "label": "SL 4.4",
+            "title": "Linear regression and Pearson correlation",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "regression"
+      },
+      {
+            "id": "sl-4-5",
+            "label": "SL 4.5",
+            "title": "Probability concepts",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "probability"
+      },
+      {
+            "id": "sl-4-6",
+            "label": "SL 4.6",
+            "title": "Venn diagrams, tree diagrams and conditional probability",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "probabilityRepresentations"
+      },
+      {
+            "id": "sl-4-7",
+            "label": "SL 4.7",
+            "title": "Discrete random variables and expected value",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "discreteRV"
+      },
+      {
+            "id": "sl-4-8",
+            "label": "SL 4.8",
+            "title": "Binomial distribution",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "binomial"
+      },
+      {
+            "id": "sl-4-9",
+            "label": "SL 4.9",
+            "title": "Normal distribution",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "normal"
+      },
+      {
+            "id": "sl-4-10",
+            "label": "SL 4.10",
+            "title": "Spearman rank correlation",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "spearman"
+      },
+      {
+            "id": "sl-4-11",
+            "label": "SL 4.11",
+            "title": "Hypothesis testing and p-values",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "SL",
+            "skill": "hypothesis"
+      },
+      {
+            "id": "ahl-4-12",
+            "label": "AHL 4.12",
+            "title": "Data collection and experimental design",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "dataCollection"
+      },
+      {
+            "id": "ahl-4-13",
+            "label": "AHL 4.13",
+            "title": "Non-linear regression and model fit",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "nonlinearRegression"
+      },
+      {
+            "id": "ahl-4-14",
+            "label": "AHL 4.14",
+            "title": "Linear transformations and combinations of random variables",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "rvTransform"
+      },
+      {
+            "id": "ahl-4-15",
+            "label": "AHL 4.15",
+            "title": "Central limit theorem and sampling distributions",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "clt"
+      },
+      {
+            "id": "ahl-4-16",
+            "label": "AHL 4.16",
+            "title": "Confidence intervals",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "confidence"
+      },
+      {
+            "id": "ahl-4-17",
+            "label": "AHL 4.17",
+            "title": "Poisson distribution",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "poisson"
+      },
+      {
+            "id": "ahl-4-18",
+            "label": "AHL 4.18",
+            "title": "Critical regions and tests for a population mean",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "criticalTest"
+      },
+      {
+            "id": "ahl-4-19",
+            "label": "AHL 4.19",
+            "title": "Markov chains and transition matrices",
+            "topic": "4",
+            "group": "Statistics and probability",
+            "level": "AHL",
+            "skill": "markov"
+      },
+      {
+            "id": "sl-5-1",
+            "label": "SL 5.1",
+            "title": "Limits, derivative as gradient and rate of change",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "limits"
+      },
+      {
+            "id": "sl-5-2",
+            "label": "SL 5.2",
+            "title": "Increasing and decreasing functions",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "derivativeSign"
+      },
+      {
+            "id": "sl-5-3",
+            "label": "SL 5.3",
+            "title": "Derivative of polynomial functions",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "derivativePower"
+      },
+      {
+            "id": "sl-5-4",
+            "label": "SL 5.4",
+            "title": "Tangents and normals",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "tangentNormal"
+      },
+      {
+            "id": "sl-5-5",
+            "label": "SL 5.5",
+            "title": "Integration as anti-differentiation and area",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "integration"
+      },
+      {
+            "id": "sl-5-6",
+            "label": "SL 5.6",
+            "title": "Stationary points and local extrema",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "stationary"
+      },
+      {
+            "id": "sl-5-7",
+            "label": "SL 5.7",
+            "title": "Optimisation in context",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "optimization"
+      },
+      {
+            "id": "sl-5-8",
+            "label": "SL 5.8",
+            "title": "Trapezoidal rule",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "SL",
+            "skill": "trapezoidal"
+      },
+      {
+            "id": "ahl-5-9",
+            "label": "AHL 5.9",
+            "title": "Further derivatives and related rates",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "derivativeAdvanced"
+      },
+      {
+            "id": "ahl-5-10",
+            "label": "AHL 5.10",
+            "title": "Second derivative, concavity and inflexion",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "secondDerivative"
+      },
+      {
+            "id": "ahl-5-11",
+            "label": "AHL 5.11",
+            "title": "Further integration techniques",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "integrationAdvanced"
+      },
+      {
+            "id": "ahl-5-12",
+            "label": "AHL 5.12",
+            "title": "Areas between curves and volumes of revolution",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "volumeRevolution"
+      },
+      {
+            "id": "ahl-5-13",
+            "label": "AHL 5.13",
+            "title": "Kinematics with calculus",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "kinematicsCalc"
+      },
+      {
+            "id": "ahl-5-14",
+            "label": "AHL 5.14",
+            "title": "Differential equations and separation of variables",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "differentialEquation"
+      },
+      {
+            "id": "ahl-5-15",
+            "label": "AHL 5.15",
+            "title": "Slope fields",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "slopeField"
+      },
+      {
+            "id": "ahl-5-16",
+            "label": "AHL 5.16",
+            "title": "Euler method",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "euler"
+      },
+      {
+            "id": "ahl-5-17",
+            "label": "AHL 5.17",
+            "title": "Phase portraits for coupled differential equations",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "phasePortrait"
+      },
+      {
+            "id": "ahl-5-18",
+            "label": "AHL 5.18",
+            "title": "Second-order differential equations",
+            "topic": "5",
+            "group": "Calculus",
+            "level": "AHL",
+            "skill": "secondOrder"
+      }
+];
+
+
     let currentClassCode = "";
     let currentClassName = "";
     let currentStudents = [];
@@ -896,6 +1684,57 @@
       });
     }
 
+
+
+    function getVisibleMcqPoints() {
+      const topic = $("#topicFilter").value;
+      const level = $("#levelFilter").value;
+      return mcqSyllabus.filter((point) => {
+        const topicMatch = topic === "all" || point.topic === topic;
+        const levelMatch = level === "all" || point.level === level;
+        return topicMatch && levelMatch;
+      });
+    }
+
+    function mcqTotalsForStudent(student, visiblePoints = mcqSyllabus) {
+      let attempts = 0;
+      let correct = 0;
+      visiblePoints.forEach((point) => {
+        const item = student.mcqStats?.[point.id];
+        attempts += Number(item?.attempts || 0);
+        correct += Number(item?.correct || 0);
+      });
+      return { attempts, correct, accuracy: attempts ? Math.round((correct / attempts) * 100) : null };
+    }
+
+    function classTotalsForPoint(students, point) {
+      let attempts = 0;
+      let correct = 0;
+      students.forEach((student) => {
+        const item = student.mcqStats?.[point.id];
+        attempts += Number(item?.attempts || 0);
+        correct += Number(item?.correct || 0);
+      });
+      return { attempts, correct, accuracy: attempts ? Math.round((correct / attempts) * 100) : null };
+    }
+
+    function mcqCellClass(accuracy, attempts) {
+      if (!attempts) return "mcq-cell mcq-none";
+      if (attempts < 3) return "mcq-cell mcq-limited";
+      if (accuracy < 50) return "mcq-cell mcq-low";
+      if (accuracy < 70) return "mcq-cell mcq-mid";
+      if (accuracy < 85) return "mcq-cell mcq-good";
+      return "mcq-cell mcq-strong";
+    }
+
+    function mcqCellText(item) {
+      const attempts = Number(item?.attempts || 0);
+      const correct = Number(item?.correct || 0);
+      if (!attempts) return "-";
+      const accuracy = Math.round((correct / attempts) * 100);
+      return `${accuracy}% (${correct}/${attempts})`;
+    }
+
     function getVisibleStudents() {
       const term = $("#searchInput").value.trim().toLowerCase();
       if (!term) return currentStudents;
@@ -907,7 +1746,7 @@
     }
 
     function lastSeenForStudent(student) {
-      const times = [student.lastSeen, ...Object.values(student.progress).map((item) => item.lastSeen)].filter(Boolean);
+      const times = [student.lastSeen, student.mcqLastSeen, ...Object.values(student.progress || {}).map((item) => item.lastSeen), ...Object.values(student.mcqStats || {}).map((item) => item.lastPractised)].filter(Boolean);
       let best = null;
       times.forEach((value) => {
         const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
@@ -1057,12 +1896,20 @@
             progress[progressDoc.id] = progressDoc.data();
           });
 
+          const mcqStatsSnap = await getDocs(collection(db, "classes", classCode, "students", studentDoc.id, "syllabusStats"));
+          const mcqStats = {};
+          mcqStatsSnap.forEach((statsDoc) => {
+            mcqStats[statsDoc.id] = statsDoc.data();
+          });
+
           students.push({
             id: studentDoc.id,
             nickname: studentData.nickname || "Unnamed student",
             joinedAt: studentData.joinedAt || null,
             lastSeen: studentData.lastSeen || null,
-            progress
+            mcqLastSeen: studentData.mcqLastSeen || null,
+            progress,
+            mcqStats
           });
         }
 
@@ -1081,6 +1928,7 @@
       renderSummary();
       renderTable();
       renderStudentCards();
+      renderMcqDashboard();
     }
 
     function renderSummary() {
@@ -1159,6 +2007,124 @@
       makeCsv(students, visibleApplets);
     }
 
+
+
+    function renderMcqDashboard() {
+      const visiblePoints = getVisibleMcqPoints();
+      const students = getVisibleStudents();
+      const tableWrap = $("#mcqTableWrap");
+      const weakCards = $("#mcqWeakCards");
+
+      $("#mcqPointCount").textContent = `${visiblePoints.length} visible syllabus points`;
+
+      if (!currentClassCode) {
+        tableWrap.innerHTML = `<table><tbody><tr><td>Load a class to begin.</td></tr></tbody></table>`;
+        weakCards.innerHTML = `<p class="message">Weak areas will appear after students practise MCQs.</p>`;
+        $("#mcqTableMessage").textContent = "Load a class to see MCQ practice data.";
+        $("#mcqAttemptsCount").textContent = "0";
+        $("#mcqAverageAccuracy").textContent = "-";
+        $("#mcqActiveStudents").textContent = "0";
+        $("#mcqWeakestPoint").textContent = "-";
+        return;
+      }
+
+      if (!students.length) {
+        tableWrap.innerHTML = `<table><tbody><tr><td>No matching students.</td></tr></tbody></table>`;
+        weakCards.innerHTML = `<p class="message">No matching students.</p>`;
+        $("#mcqTableMessage").textContent = "No students match the current filters.";
+        return;
+      }
+
+      const studentTotals = students.map((student) => ({ student, ...mcqTotalsForStudent(student, visiblePoints) }));
+      const totalAttempts = studentTotals.reduce((sum, item) => sum + item.attempts, 0);
+      const totalCorrect = studentTotals.reduce((sum, item) => sum + item.correct, 0);
+      const average = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : null;
+      const activeStudents = studentTotals.filter((item) => item.attempts > 0).length;
+
+      const pointTotals = visiblePoints.map((point) => ({ point, ...classTotalsForPoint(students, point) }));
+      const weakPoints = pointTotals
+        .filter((item) => item.attempts > 0)
+        .sort((a, b) => (a.accuracy ?? 101) - (b.accuracy ?? 101) || b.attempts - a.attempts);
+
+      $("#mcqAttemptsCount").textContent = totalAttempts;
+      $("#mcqAverageAccuracy").textContent = average === null ? "-" : `${average}%`;
+      $("#mcqActiveStudents").textContent = activeStudents;
+      $("#mcqWeakestPoint").textContent = weakPoints.length ? weakPoints[0].point.label : "-";
+
+      const header = `
+        <tr>
+          <th>Student</th>
+          <th>Overall</th>
+          <th>Attempts</th>
+          ${visiblePoints.map((point) => `<th title="${escapeHtml(point.title)}">${escapeHtml(point.label)}<br>${escapeHtml(point.title)}</th>`).join("")}
+          <th>Weakest</th>
+          <th>Last MCQ</th>
+        </tr>
+      `;
+
+      const rows = students.map((student) => {
+        const total = mcqTotalsForStudent(student, visiblePoints);
+        const weakest = visiblePoints
+          .map((point) => ({ point, item: student.mcqStats?.[point.id] }))
+          .filter((entry) => Number(entry.item?.attempts || 0) > 0)
+          .map((entry) => {
+            const attempts = Number(entry.item.attempts || 0);
+            const correct = Number(entry.item.correct || 0);
+            return { ...entry, attempts, accuracy: Math.round((correct / attempts) * 100) };
+          })
+          .sort((a, b) => a.accuracy - b.accuracy || b.attempts - a.attempts)[0];
+
+        const lastMcq = Object.values(student.mcqStats || {})
+          .map((item) => item.lastPractised)
+          .filter(Boolean)
+          .sort((a, b) => {
+            const da = typeof a.toDate === "function" ? a.toDate() : new Date(a);
+            const db = typeof b.toDate === "function" ? b.toDate() : new Date(b);
+            return db - da;
+          })[0];
+
+        const cells = visiblePoints.map((point) => {
+          const item = student.mcqStats?.[point.id];
+          const attempts = Number(item?.attempts || 0);
+          const correct = Number(item?.correct || 0);
+          const accuracy = attempts ? Math.round((correct / attempts) * 100) : null;
+          return `<td class="${mcqCellClass(accuracy, attempts)}" title="${escapeHtml(point.title)}">${escapeHtml(mcqCellText(item))}</td>`;
+        }).join("");
+
+        return `
+          <tr>
+            <td>${escapeHtml(student.nickname)}<span class="student-sub">${escapeHtml(student.id.slice(0, 8))}</span></td>
+            <td class="${mcqCellClass(total.accuracy, total.attempts)}">${total.accuracy === null ? "-" : `${total.accuracy}%`}</td>
+            <td><strong>${total.attempts}</strong></td>
+            ${cells}
+            <td>${weakest ? `${escapeHtml(weakest.point.label)} · ${weakest.accuracy}%` : "-"}</td>
+            <td>${lastMcq ? escapeHtml(formatTimestamp(lastMcq)) : "-"}</td>
+          </tr>
+        `;
+      }).join("");
+
+      tableWrap.innerHTML = `
+        <table>
+          <thead>${header}</thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      $("#mcqTableMessage").textContent = `${students.length} students shown. Cells show accuracy and correct/attempts for each visible syllabus point.`;
+
+      if (!weakPoints.length) {
+        weakCards.innerHTML = `<p class="message">No MCQ attempts yet. Ask students to use mcq_practice.html with class code ${escapeHtml(currentClassCode)}.</p>`;
+      } else {
+        weakCards.innerHTML = weakPoints.slice(0, 6).map((item) => `
+          <article class="weak-card">
+            <strong>${escapeHtml(item.point.label)} · ${escapeHtml(item.point.title)}</strong>
+            <span class="muted">Class accuracy: ${item.accuracy}% · ${item.correct}/${item.attempts}</span>
+            <div class="meter"><span style="width:${item.accuracy}%"></span></div>
+          </article>
+        `).join("");
+      }
+    }
+
     function renderStudentCards() {
       const target = $("#studentCards");
       const students = getVisibleStudents();
@@ -1182,11 +2148,15 @@
           .map((applet) => applet.points)
           .join(", ") || "None";
 
+        const mcqTotal = mcqTotalsForStudent(student);
+        const mcqText = mcqTotal.attempts ? `${mcqTotal.accuracy}% MCQ accuracy · ${mcqTotal.correct}/${mcqTotal.attempts}` : "No MCQ attempts yet";
+
         return `
           <article class="student-card">
             <h3>${escapeHtml(student.nickname)}</h3>
             <div class="meter" aria-hidden="true"><span style="width:${percent}%"></span></div>
-            <span class="muted">${done}/${applets.length} complete · ${percent}%</span>
+            <span class="muted">${done}/${applets.length} applets complete · ${percent}%</span>
+            <span class="muted">${escapeHtml(mcqText)}</span>
             <span class="muted">Last active: ${escapeHtml(formatTimestamp(lastSeenForStudent(student)))}</span>
             <span class="muted">Next missing: ${escapeHtml(missing)}</span>
           </article>
@@ -1199,6 +2169,7 @@
       rows.push(["Class code", currentClassCode]);
       rows.push(["Class name", currentClassName]);
       rows.push([]);
+      rows.push(["Applet progress"]);
       rows.push(["Student", ...visibleApplets.map((applet) => `${applet.points} - ${applet.title}`), "Total completed", "Last active"]);
 
       students.forEach((student) => {
@@ -1209,6 +2180,19 @@
         });
         row.push(visibleApplets.filter((applet) => student.progress[applet.id]?.completed).length);
         row.push(formatTimestamp(lastSeenForStudent(student)));
+        rows.push(row);
+      });
+
+      const visibleMcq = getVisibleMcqPoints();
+      rows.push([]);
+      rows.push(["MCQ performance"]);
+      rows.push(["Student", "Overall accuracy", "Total attempts", ...visibleMcq.map((point) => `${point.label} - ${point.title}`)]);
+      students.forEach((student) => {
+        const total = mcqTotalsForStudent(student, visibleMcq);
+        const row = [student.nickname, total.accuracy === null ? "" : `${total.accuracy}%`, total.attempts];
+        visibleMcq.forEach((point) => {
+          row.push(mcqCellText(student.mcqStats?.[point.id]));
+        });
         rows.push(row);
       });
 
