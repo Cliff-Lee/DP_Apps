@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IB AI Question Bank Builder</title>
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']], displayMath: [['\\[','\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root{
+      --ink:#10233f; --muted:#5f718a; --sea:#0ea5b7; --blue:#1d4ed8; --navy:#0b2454;
+      --sky:#e9fbff; --panel:#ffffff; --line:#dbe7f3; --gold:#f59e0b; --green:#16a34a;
+      --danger:#dc2626; --shadow:0 12px 30px rgba(16,35,63,.10); --r:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;background:linear-gradient(135deg,#eefbff 0,#f7fbff 45%,#edf4ff 100%);}
+    a{color:var(--blue)}
+    .skip{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}.skip:focus{left:1rem;top:1rem;width:auto;height:auto;background:#fff;border:2px solid var(--blue);padding:.6rem;border-radius:.6rem;z-index:20}
+    header.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 20% 0%,#40d3e0 0,#1587c8 34%,#163a86 68%,#091b42 100%);padding:34px 22px 26px;border-bottom:1px solid rgba(255,255,255,.22)}
+    header.hero:before{content:"";position:absolute;right:-120px;bottom:-150px;width:520px;height:520px;border-radius:50%;border:70px solid rgba(255,255,255,.12)}
+    header.hero:after{content:"";position:absolute;left:-160px;top:-230px;width:520px;height:520px;border-radius:50%;border:1px solid rgba(255,255,255,.45);transform:rotate(-18deg)}
+    .hero-inner{max-width:1220px;margin:auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end}
+    .kicker{letter-spacing:.14em;text-transform:uppercase;font-weight:800;font-size:.78rem;color:#a7f3ff;margin-bottom:8px}.hero h1{font-size:clamp(2rem,5vw,4rem);margin:0;line-height:1.02}.hero p{margin:10px 0 0;max-width:760px;color:#e7fbff;font-size:1.05rem}.hero-badge{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:12px 14px;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16);white-space:nowrap;font-weight:800}
+    main{max-width:1220px;margin:0 auto;padding:20px 14px 60px}.layout{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:18px;align-items:start}.panel{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.controls{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:16px}.panel h2,.panel h3{margin:0}.panel h2{font-size:1.25rem}.small{font-size:.86rem;color:var(--muted);line-height:1.45}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin:12px 0}.field label{display:block;font-weight:800;font-size:.86rem;margin-bottom:6px}select,input[type="number"],input[type="text"]{width:100%;padding:10px 12px;border:1px solid #cbd9ea;border-radius:12px;background:#fff;color:var(--ink);font:inherit}input[type="checkbox"]{accent-color:var(--sea)}button{border:0;border-radius:14px;padding:10px 14px;font-weight:850;cursor:pointer;background:#eef7ff;color:var(--navy);box-shadow:inset 0 0 0 1px #cfe4ff}button.primary{background:linear-gradient(135deg,var(--sea),var(--blue));color:#fff;box-shadow:0 10px 18px rgba(29,78,216,.20)}button.good{background:#dcfce7;color:#14532d}button.warn{background:#fff7ed;color:#9a3412}button.danger{background:#fee2e2;color:#991b1b}button:active{transform:translateY(1px)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.pillbar{display:flex;gap:8px;flex-wrap:wrap}.pill{border-radius:999px;padding:8px 10px;background:#eef7ff;border:1px solid #cfe4ff;font-size:.85rem;font-weight:800}.pill.active{background:#dffaff;border-color:#7dd3fc;color:#075985}.topic{border:1px solid #dde9f5;border-radius:16px;margin:10px 0;background:#fbfeff;overflow:hidden}.topic summary{cursor:pointer;list-style:none;padding:12px 12px;font-weight:900;display:flex;align-items:center;justify-content:space-between}.topic summary::-webkit-details-marker{display:none}.topic .inside{border-top:1px solid #e6eef7;padding:8px 12px 12px}.syll-row{display:grid;grid-template-columns:22px 58px 1fr auto;gap:8px;align-items:start;padding:7px 0;border-bottom:1px dashed #edf3f8}.syll-row:last-child{border-bottom:0}.code{font-weight:900;color:#0f4c81}.tag{font-size:.72rem;border-radius:999px;padding:2px 7px;background:#ecfeff;color:#155e75;border:1px solid #a5f3fc}.tag.ahl{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.selectedCount{font-weight:900;color:var(--blue)}.stage{min-height:70vh}.stage-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{padding:9px 12px;border-radius:999px;background:#f2f7ff;border:1px solid #d5e3f6;font-weight:900;cursor:pointer}.tab.active{background:var(--navy);color:white;border-color:var(--navy)}.output{padding:18px}.notice{background:#effcff;border:1px solid #c4f1ff;color:#164e63;border-radius:14px;padding:12px;margin:0 0 14px}.paper{background:#fff;border:1px solid #e3ebf5;border-radius:12px;padding:24px;max-width:900px;margin:0 auto 18px}.paper h1{font-size:1.65rem;margin:.2rem 0}.paper-section{border-top:3px solid #dbeafe;margin-top:28px;padding-top:18px}.paper-section:first-of-type{border-top:0;margin-top:0;padding-top:0}.section-title{font-size:1.35rem;margin:.2rem 0;color:#0b2454}.section-note{font-size:.88rem;color:#5f718a;margin:.25rem 0 1rem}.paper-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.meta-box{border:1px solid #dbe7f3;border-radius:10px;padding:8px;font-size:.86rem}.question{border-top:2px solid #e2eaf4;padding-top:18px;margin-top:20px;break-inside:avoid}.qhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.qtitle{font-weight:950;font-size:1.05rem}.marks{white-space:nowrap;font-weight:900;color:#0f766e}.parts{margin:.4rem 0 0 1.1rem;padding-left:.8rem}.parts li{margin:.55rem 0;line-height:1.55}.diagram{margin:12px 0;background:#fbfdff;border:1px solid #d9e7f5;border-radius:14px;padding:10px;text-align:center;overflow:auto}.diagram svg{max-width:100%;height:auto}.answer-space{height:calc(var(--lines,5)*1.65em);margin:.55rem 0 1rem;border:1px solid #d8e5f2;border-radius:10px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 1.55em,#dbe7f3 1.58em,#dbe7f3 1.63em);break-inside:avoid}.answer-space:before{content:"Answer space";display:block;font-size:.72rem;color:#64748b;padding:4px 8px;background:rgba(248,251,255,.88);border-bottom:1px solid #e2edf7;border-radius:10px 10px 0 0}.ms-step{background:#f8fbff;border:1px solid #e0e9f5;border-radius:12px;padding:12px;margin:10px 0}.ms-step h4{margin:.1rem 0 .45rem}.markline{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed #dae5f0;padding-top:7px;margin-top:7px;color:#334155}.jsonbox{white-space:pre-wrap;background:#071226;color:#e5f2ff;border-radius:14px;padding:14px;overflow:auto;max-height:620px}.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.help-card{border:1px solid #dce8f5;border-radius:16px;background:#fbfdff;padding:14px}.footer-note{margin:24px auto 0;max-width:900px;color:#5f718a;font-size:.84rem;line-height:1.5}.empty{padding:40px;text-align:center;color:var(--muted)}
+    @media(max-width:940px){.layout{grid-template-columns:1fr}.controls{position:relative;top:0;max-height:none}.hero-inner{grid-template-columns:1fr}.paper-meta{grid-template-columns:1fr 1fr}.help-grid{grid-template-columns:1fr}}
+    @media print{body{background:white}.controls,.stage-head,.toolbar,.notice,.footer-note,header.hero .hero-badge,header.hero p,.tabs{display:none!important}main{padding:0}.layout{display:block}.panel{box-shadow:none;border:0}.output{padding:0}.paper{border:0;padding:0;max-width:none}.question{page-break-inside:avoid}.hero{display:none!important}.diagram{border:1px solid #ddd}.marks{color:#000}.tabpane:not(.printme){display:none!important}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#output">Skip to question paper</a>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="kicker">IB AI Archipelago</div>
+      <h1>Question Bank Builder</h1>
+      <p>Create Paper 1, Paper 2 and HL Paper 3 style tests from any combination of AI SL/AHL syllabus points. Numbers, contexts, diagrams, writing spaces and markschemes are generated dynamically in the browser.</p>
+    </div>
+    <div class="hero-badge">36+ applet style · printable</div>
+  </div>
+</header>
+<main>
+  <div class="layout">
+    <aside class="panel controls" aria-label="Question bank controls">
+      <h2>Build a test</h2>
+      <p class="small">Select any syllabus points, then generate a paper and markscheme. Labels are short teacher-facing summaries, not official IB wording.</p>
+      <div class="field grid2">
+        <div>
+          <label for="paperStyle">Paper style</label>
+          <select id="paperStyle">
+            <option value="mixed">Mixed Paper 1 + Paper 2 + HL Paper 3</option>
+            <option value="p1">Paper 1 style: short response</option>
+            <option value="p2">Paper 2 style: extended response</option>
+            <option value="p3">HL Paper 3 style: extended problem-solving</option>
+          </select>
+        </div>
+        <div>
+          <label for="levelFilter">Level</label>
+          <select id="levelFilter">
+            <option value="all">SL + AHL</option>
+            <option value="sl">SL only</option>
+            <option value="ahl">AHL only</option>
+          </select>
+        </div>
+      </div>
+      <div class="field grid2">
+        <div>
+          <label for="qCount">Number of questions</label>
+          <input id="qCount" type="number" min="1" max="80" value="12" />
+        </div>
+        <div>
+          <label for="difficulty">Difficulty</label>
+          <select id="difficulty">
+            <option value="1">1 Foundation</option>
+            <option value="2" selected>2 Standard</option>
+            <option value="3">3 Challenge</option>
+          </select>
+        </div>
+      </div>
+      <div class="field grid2">
+        <div>
+          <label for="seed">Seed</label>
+          <input id="seed" type="text" value="AI-2026" />
+        </div>
+        <div>
+          <label for="paperTitle">Paper title</label>
+          <input id="paperTitle" type="text" value="DP AI Practice Test" />
+        </div>
+      </div>
+      <div class="field row">
+        <label class="row" style="margin:0"><input id="includeDiagrams" type="checkbox" checked /> Include diagrams when useful</label>
+        <label class="row" style="margin:0"><input id="includeSpace" type="checkbox" /> Include writing space</label>
+        <label class="row" style="margin:0"><input id="avoidRepeat" type="checkbox" checked /> Avoid repeated templates</label>
+      </div>
+      <div class="field grid2">
+        <div>
+          <label for="spaceLines">Writing space density</label>
+          <select id="spaceLines">
+            <option value="1">Compact: about 1 line per mark</option>
+            <option value="2" selected>Standard: about 2 lines per mark</option>
+            <option value="3">Generous: about 3 lines per mark</option>
+          </select>
+        </div>
+        <div>
+          <label for="paperHint">Paper 3 hint</label>
+          <input id="paperHint" type="text" value="use technology where appropriate" />
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="primary" id="generateBtn">Generate paper</button>
+        <button class="good" id="fullPackBtn">Random SL/HL pack</button>
+        <button class="warn" id="randomSeedBtn">New seed</button>
+        <button id="selectVisibleBtn">Select visible</button>
+        <button class="danger" id="clearBtn">Clear</button>
+      </div>
+      <div class="pillbar" id="quickFilters"></div>
+      <div class="field">
+        <label for="search">Search syllabus points</label>
+        <input id="search" type="text" placeholder="e.g. normal, vectors, SL 2.1, calculus" />
+      </div>
+      <p class="small"><span class="selectedCount" id="selectedCount">0</span> syllabus points selected.</p>
+      <div id="syllabusList"></div>
+    </aside>
+
+    <section class="panel stage" id="output">
+      <div class="stage-head">
+        <div>
+          <h2>Output</h2>
+          <div class="small" id="summaryLine">Generate a paper to begin.</div>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="paperPane">Question paper</button>
+          <button class="tab" data-tab="markschemePane">Markscheme</button>
+          <button class="tab" data-tab="jsonPane">JSON</button>
+          <button class="tab" data-tab="helpPane">Extend</button>
+        </div>
+        <div class="toolbar" style="margin:0">
+          <button class="good" id="printBtn">Print / Save PDF</button>
+          <button id="copyBtn">Copy current tab</button>
+        </div>
+      </div>
+      <div class="output">
+        <div class="notice">Tip: for a clean PDF, open the <strong>Question paper</strong> tab or <strong>Markscheme</strong> tab, then use <strong>Print / Save PDF</strong>. Paper 3 is generated for HL only.</div>
+        <div id="paperPane" class="tabpane printme"></div>
+        <div id="markschemePane" class="tabpane" hidden></div>
+        <div id="jsonPane" class="tabpane" hidden></div>
+        <div id="helpPane" class="tabpane" hidden></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+const TOPICS = [
+  {id:'t1', title:'Topic 1: Number and algebra'},
+  {id:'t2', title:'Topic 2: Functions'},
+  {id:'t3', title:'Topic 3: Geometry and trigonometry'},
+  {id:'t4', title:'Topic 4: Statistics and probability'},
+  {id:'t5', title:'Topic 5: Calculus'}
+];
+const SYLLABUS = [
+  ['SL 1.1','SL','t1','Scientific notation and operations','scientific'],
+  ['SL 1.2','SL','t1','Arithmetic sequences and series','sequences'],
+  ['SL 1.3','SL','t1','Geometric sequences and series','sequences'],
+  ['SL 1.4','SL','t1','Financial applications: compound interest and depreciation','finance'],
+  ['SL 1.5','SL','t1','Integer exponent laws','algebraTech'],
+  ['SL 1.6','SL','t1','Approximation, bounds and percentage errors','scientific'],
+  ['SL 1.7','SL','t1','Amortization and annuities using technology','finance'],
+  ['SL 1.8','SL','t1','Technology solutions: equations and systems','algebraTech'],
+  ['AHL 1.9','AHL','t1','Logarithm laws','algebraTech'],
+  ['AHL 1.10','AHL','t1','Rational exponents','algebraTech'],
+  ['AHL 1.11','AHL','t1','Infinite geometric sequences','sequences'],
+  ['AHL 1.12','AHL','t1','Complex numbers in Cartesian form','complex'],
+  ['AHL 1.13','AHL','t1','Complex numbers in polar/exponential form','complex'],
+  ['AHL 1.14','AHL','t1','Matrices and matrix algebra','matrices'],
+  ['AHL 1.15','AHL','t1','Eigenvalues, eigenvectors and diagonalization','matrices'],
+  ['SL 2.1','SL','t2','Straight lines, gradients and intercepts','line'],
+  ['SL 2.2','SL','t2','Functions, domain, range and notation','function'],
+  ['SL 2.3','SL','t2','Graphs of functions','function'],
+  ['SL 2.4','SL','t2','Key features of graphs','function'],
+  ['SL 2.5','SL','t2','Linear, quadratic, cubic, exponential and sinusoidal models','modelling'],
+  ['SL 2.6','SL','t2','Modelling skills: fit, test, use and reflect','modelling'],
+  ['AHL 2.7','AHL','t2','Composite and inverse functions','function'],
+  ['AHL 2.8','AHL','t2','Transformations of graphs','function'],
+  ['AHL 2.9','AHL','t2','Further models including half-life and logistics','modelling'],
+  ['AHL 2.10','AHL','t2','Logarithmic scaling and linearisation','modelling'],
+  ['SL 3.1','SL','t3','3D distance, midpoint, volume and surface area','geo3d'],
+  ['SL 3.2','SL','t3','Right-angled trigonometry','trig'],
+  ['SL 3.3','SL','t3','Applications of right and non-right trigonometry','trig'],
+  ['SL 3.4','SL','t3','Arc length and sector area in degrees','sector'],
+  ['SL 3.5','SL','t3','Perpendicular bisectors','voronoi'],
+  ['SL 3.6','SL','t3','Voronoi diagrams and nearest neighbour interpolation','voronoi'],
+  ['AHL 3.7','AHL','t3','Radians, arc length and sector area','sector'],
+  ['AHL 3.8','AHL','t3','Unit circle definitions and identities','sector'],
+  ['AHL 3.9','AHL','t3','Matrix transformations in 2D','transformVector'],
+  ['AHL 3.10','AHL','t3','Vectors, scalars and components','transformVector'],
+  ['AHL 3.11','AHL','t3','Vector equations of lines','transformVector'],
+  ['AHL 3.12','AHL','t3','Vector kinematics','transformVector'],
+  ['AHL 3.13','AHL','t3','Scalar product and angle between vectors','transformVector'],
+  ['AHL 3.14','AHL','t3','Graph theory vocabulary and modelling','graphTheory'],
+  ['AHL 3.15','AHL','t3','Adjacency matrices and walks','graphTheory'],
+  ['AHL 3.16','AHL','t3','Trees, cycles, Eulerian/Hamiltonian ideas and MST','graphTheory'],
+  ['SL 4.1','SL','t4','Population, sample, data types and sampling','data'],
+  ['SL 4.2','SL','t4','Tables, histograms, boxplots and cumulative frequency','data'],
+  ['SL 4.3','SL','t4','Mean, median, quartiles, standard deviation and outliers','data'],
+  ['SL 4.4','SL','t4','Linear correlation and Pearson coefficient','correlation'],
+  ['SL 4.5','SL','t4','Probability language and basic probability','probability'],
+  ['SL 4.6','SL','t4','Venn diagrams, tree diagrams and conditional probability','probability'],
+  ['SL 4.7','SL','t4','Discrete random variables and expected value','probability'],
+  ['SL 4.8','SL','t4','Binomial distribution','distribution'],
+  ['SL 4.9','SL','t4','Normal distribution','distribution'],
+  ['SL 4.10','SL','t4','Spearman rank correlation','correlation'],
+  ['SL 4.11','SL','t4','Hypothesis testing and p-values','hypothesis'],
+  ['AHL 4.12','AHL','t4','Valid data collection and bias','data'],
+  ['AHL 4.13','AHL','t4','Non-linear regression','correlation'],
+  ['AHL 4.14','AHL','t4','Linear transformation of random variables','distribution'],
+  ['AHL 4.15','AHL','t4','Linear combinations of normal variables','distribution'],
+  ['AHL 4.16','AHL','t4','Confidence intervals for a mean','hypothesis'],
+  ['AHL 4.17','AHL','t4','Poisson distribution','distribution'],
+  ['AHL 4.18','AHL','t4','Critical values, t-tests and population mean tests','hypothesis'],
+  ['AHL 4.19','AHL','t4','Transition matrices and Markov chains','matrices'],
+  ['SL 5.1','SL','t5','Limits from tables and graphs','calculus'],
+  ['SL 5.2','SL','t5','Increasing/decreasing functions and derivative sign','calculus'],
+  ['SL 5.3','SL','t5','Derivative of polynomial functions','calculus'],
+  ['SL 5.4','SL','t5','Tangents and normals','calculus'],
+  ['SL 5.5','SL','t5','Integration as anti-differentiation','calculus'],
+  ['SL 5.6','SL','t5','Stationary points and local extrema','optimisation'],
+  ['SL 5.7','SL','t5','Optimisation in context','optimisation'],
+  ['SL 5.8','SL','t5','Trapezoidal rule','trapezoid'],
+  ['AHL 5.9','AHL','t5','Differentiation rules and related rates','calculus'],
+  ['AHL 5.10','AHL','t5','Second derivative and concavity','optimisation'],
+  ['AHL 5.11','AHL','t5','Further integration techniques','calculus'],
+  ['AHL 5.12','AHL','t5','Areas and volumes of revolution','calculus'],
+  ['AHL 5.13','AHL','t5','Kinematics with displacement, velocity and acceleration','calculus'],
+  ['AHL 5.14','AHL','t5','Setting up and solving differential equations','diffeq'],
+  ['AHL 5.15','AHL','t5','Slope fields','diffeq'],
+  ['AHL 5.16','AHL','t5','Euler’s method','diffeq'],
+  ['AHL 5.17','AHL','t5','Phase portraits for coupled differential equations','diffeq'],
+  ['AHL 5.18','AHL','t5','Second order differential equations as systems','diffeq']
+].map(([code,level,topic,label,gen]) => ({code,level,topic,label,gen}));
+
+const CONTEXTS = {
+  science:['battery storage','microplastics survey','school energy use','bacterial growth','drone altitude','phone charging'],
+  business:['café sales','concert tickets','bike rental','app subscriptions','delivery costs','online tutoring'],
+  sport:['rowing training','football attendance','climbing wall','running pace','swimming times','basketball shots'],
+  geography:['rainfall','urban traffic','river depth','air quality','train passengers','tourist numbers']
+};
+function hashSeed(str){let h=2166136261>>>0; for(let i=0;i<str.length;i++){h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0;}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;}}
+function randInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min}
+function choice(rng,arr){return arr[Math.floor(rng()*arr.length)]}
+function shuffle(rng,arr){const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+function round(x,dp=3){const f=Math.pow(10,dp); return Math.round((x+Number.EPSILON)*f)/f;}
+function fmt(x,dp=3){if(Number.isInteger(x)) return String(x); return String(round(x,dp));}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b); while(b){[a,b]=[b,a%b]} return a||1}
+function frac(n,d){const g=gcd(n,d); n/=g; d/=g; if(d<0){n=-n;d=-d} return d===1?`${n}`:`\\frac{${n}}{${d}}`}
+function pm(n){return n>=0?`+ ${n}`:`- ${Math.abs(n)}`}
+function sum(arr){return arr.reduce((a,b)=>a+b,0)}
+function mean(arr){return sum(arr)/arr.length}
+function sd(arr){const m=mean(arr); return Math.sqrt(sum(arr.map(x=>(x-m)**2))/(arr.length));}
+function median(arr){const a=[...arr].sort((x,y)=>x-y); const n=a.length; return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2}
+function erf(x){const sign=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return sign*y;}
+function normCdf(x,mu,sg){return 0.5*(1+erf((x-mu)/(sg*Math.SQRT2)));}
+function nCr(n,r){if(r<0||r>n)return 0; r=Math.min(r,n-r); let out=1; for(let i=1;i<=r;i++) out=out*(n-r+i)/i; return out;}
+function binomProb(n,p,k){return nCr(n,k)*(p**k)*((1-p)**(n-k));}
+function poissonProb(l,k){let out=Math.exp(-l); for(let i=1;i<=k;i++) out*=l/i; return out;}
+function esc(s){return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+function marksText(m){return `[${m} mark${m===1?'':'s'}]`}
+function qObj(o){return Object.assign({svg:'',data:{},notes:''},o)}
+function part(text,marks){return {text,marks}}
+
+function axesSvg(points, opts={}){
+  const w=440,h=280,p=38; const xs=points.map(pt=>pt[0]), ys=points.map(pt=>pt[1]);
+  let xmin=Math.min(0,...xs), xmax=Math.max(0,...xs), ymin=Math.min(0,...ys), ymax=Math.max(0,...ys);
+  if(xmin===xmax){xmin-=1;xmax+=1} if(ymin===ymax){ymin-=1;ymax+=1}
+  const padX=(xmax-xmin)*.15, padY=(ymax-ymin)*.15; xmin-=padX;xmax+=padX;ymin-=padY;ymax+=padY;
+  const X=x=>p+(x-xmin)/(xmax-xmin)*(w-2*p), Y=y=>h-p-(y-ymin)/(ymax-ymin)*(h-2*p);
+  const x0=X(0), y0=Y(0);
+  const line=points.map(([x,y])=>`${X(x)},${Y(y)}`).join(' ');
+  let dots=points.map(([x,y])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="#0f766e"/>`).join('');
+  let labels='';
+  if(opts.labels){labels=points.map(([x,y],i)=>`<text x="${X(x)+6}" y="${Y(y)-6}" font-size="12">${opts.labels[i]}</text>`).join('')}
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="coordinate graph"><rect width="${w}" height="${h}" fill="#fff" rx="12"/><line x1="${p}" y1="${y0}" x2="${w-p}" y2="${y0}" stroke="#94a3b8"/><line x1="${x0}" y1="${p}" x2="${x0}" y2="${h-p}" stroke="#94a3b8"/><text x="${w-p+5}" y="${y0+4}" font-size="12">x</text><text x="${x0+4}" y="${p-8}" font-size="12">y</text><polyline points="${line}" fill="none" stroke="#1d4ed8" stroke-width="3"/>${dots}${labels}</svg>`;
+}
+function scatterSvg(data, line=null){
+  const w=440,h=280,p=40; const xs=data.map(d=>d[0]),ys=data.map(d=>d[1]); let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys); xmin-=1;xmax+=1;ymin-=3;ymax+=3;
+  const X=x=>p+(x-xmin)/(xmax-xmin)*(w-2*p), Y=y=>h-p-(y-ymin)/(ymax-ymin)*(h-2*p);
+  const dots=data.map(([x,y])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="#0f766e"/>`).join('');
+  let best=''; if(line){const y1=line.a*xmin+line.b,y2=line.a*xmax+line.b; best=`<line x1="${X(xmin)}" y1="${Y(y1)}" x2="${X(xmax)}" y2="${Y(y2)}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>`;}
+  return `<svg viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#fff" rx="12"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#94a3b8"/><line x1="${p}" y1="${p}" x2="${p}" y2="${h-p}" stroke="#94a3b8"/>${best}${dots}<text x="${w/2-22}" y="${h-8}" font-size="12">x</text><text x="8" y="${h/2}" font-size="12">y</text></svg>`;
+}
+function boxplotSvg(vals){
+  const a=[...vals].sort((x,y)=>x-y), min=a[0], max=a[a.length-1], q2=median(a), q1=median(a.slice(0,Math.floor(a.length/2))), q3=median(a.slice(Math.ceil(a.length/2)));
+  const w=440,h=130,p=42; const X=x=>p+(x-min)/(max-min)*(w-2*p); const y=60;
+  return `<svg viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#fff" rx="12"/><line x1="${X(min)}" y1="${y}" x2="${X(max)}" y2="${y}" stroke="#334155"/><rect x="${X(q1)}" y="35" width="${X(q3)-X(q1)}" height="50" fill="#eff6ff" stroke="#1d4ed8"/><line x1="${X(q2)}" y1="35" x2="${X(q2)}" y2="85" stroke="#dc2626" stroke-width="2"/><line x1="${X(min)}" y1="45" x2="${X(min)}" y2="75" stroke="#334155"/><line x1="${X(max)}" y1="45" x2="${X(max)}" y2="75" stroke="#334155"/><text x="${X(min)-10}" y="110" font-size="12">${min}</text><text x="${X(q1)-10}" y="25" font-size="12">Q1</text><text x="${X(q2)-10}" y="25" font-size="12">M</text><text x="${X(q3)-10}" y="25" font-size="12">Q3</text><text x="${X(max)-10}" y="110" font-size="12">${max}</text></svg>`;
+}
+function treeSvg(a,b,c){
+  return `<svg viewBox="0 0 520 230"><rect width="520" height="230" fill="#fff" rx="12"/><text x="25" y="113" font-size="14">Start</text><line x1="80" y1="110" x2="210" y2="55" stroke="#334155"/><line x1="80" y1="110" x2="210" y2="165" stroke="#334155"/><text x="125" y="70" font-size="14">A ${a}</text><text x="120" y="160" font-size="14">A' ${round(1-a,2)}</text><line x1="225" y1="55" x2="395" y2="30" stroke="#334155"/><line x1="225" y1="55" x2="395" y2="85" stroke="#334155"/><line x1="225" y1="165" x2="395" y2="135" stroke="#334155"/><line x1="225" y1="165" x2="395" y2="195" stroke="#334155"/><text x="285" y="32" font-size="14">B ${b}</text><text x="285" y="98" font-size="14">B' ${round(1-b,2)}</text><text x="285" y="135" font-size="14">B ${c}</text><text x="285" y="205" font-size="14">B' ${round(1-c,2)}</text></svg>`;
+}
+function vennSvg(a,b,inter,total){
+  const onlyA=a-inter, onlyB=b-inter, neither=total-a-b+inter;
+  return `<svg viewBox="0 0 440 250"><rect x="15" y="15" width="410" height="220" rx="12" fill="#fff" stroke="#94a3b8"/><circle cx="180" cy="125" r="85" fill="#bfdbfe" fill-opacity=".65" stroke="#1d4ed8"/><circle cx="260" cy="125" r="85" fill="#a7f3d0" fill-opacity=".65" stroke="#059669"/><text x="130" y="55" font-size="15">A</text><text x="300" y="55" font-size="15">B</text><text x="140" y="130" font-size="20">${onlyA}</text><text x="217" y="130" font-size="20">${inter}</text><text x="296" y="130" font-size="20">${onlyB}</text><text x="360" y="215" font-size="18">${neither}</text></svg>`;
+}
+function triangleSvg(a,b,angle,mode='right'){
+  if(mode==='right') return `<svg viewBox="0 0 420 260"><rect width="420" height="260" fill="#fff" rx="12"/><polygon points="70,205 330,205 330,60" fill="#f8fbff" stroke="#1d4ed8" stroke-width="3"/><path d="M310 205 L310 185 L330 185" fill="none" stroke="#334155"/><text x="190" y="228" font-size="16">${a} m</text><text x="340" y="140" font-size="16">height</text><text x="92" y="194" font-size="16">${angle}°</text><path d="M105 205 A35 35 0 0 0 101 184" fill="none" stroke="#f59e0b" stroke-width="3"/></svg>`;
+  return `<svg viewBox="0 0 420 260"><rect width="420" height="260" fill="#fff" rx="12"/><polygon points="65,200 350,200 260,55" fill="#f8fbff" stroke="#1d4ed8" stroke-width="3"/><text x="190" y="225" font-size="16">${a}</text><text x="306" y="125" font-size="16">${b}</text><text x="80" y="188" font-size="16">${angle}°</text><path d="M105 200 A35 35 0 0 0 95 176" fill="none" stroke="#f59e0b" stroke-width="3"/></svg>`;
+}
+function normalSvg(mu,sg,x){
+  const w=440,h=210,p=35; const xmin=mu-4*sg,xmax=mu+4*sg; const X=v=>p+(v-xmin)/(xmax-xmin)*(w-2*p); const Y=v=>h-p-v*1250;
+  let pts=[]; for(let i=0;i<=160;i++){const xx=xmin+(xmax-xmin)*i/160; const yy=1/(sg*Math.sqrt(2*Math.PI))*Math.exp(-.5*((xx-mu)/sg)**2); pts.push(`${X(xx)},${Y(yy)}`)}
+  return `<svg viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#fff" rx="12"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#94a3b8"/><polyline points="${pts.join(' ')}" fill="none" stroke="#1d4ed8" stroke-width="3"/><line x1="${X(x)}" y1="${h-p}" x2="${X(x)}" y2="42" stroke="#dc2626" stroke-dasharray="5 4"/><text x="${X(mu)-10}" y="${h-12}" font-size="12">μ</text><text x="${X(x)-18}" y="35" font-size="12">x=${x}</text></svg>`;
+}
+function networkSvg(nodes, edges){
+  const coords={A:[70,90],B:[180,45],C:[300,75],D:[145,170],E:[275,180],F:[380,130]};
+  let lines=edges.map(e=>{const [u,v,w]=e, a=coords[u], b=coords[v], mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2; return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#334155"/><text x="${mx}" y="${my-5}" font-size="13" fill="#111827">${w}</text>`}).join('');
+  let circles=nodes.map(n=>`<circle cx="${coords[n][0]}" cy="${coords[n][1]}" r="18" fill="#eff6ff" stroke="#1d4ed8"/><text x="${coords[n][0]-5}" y="${coords[n][1]+5}" font-size="15" font-weight="700">${n}</text>`).join('');
+  return `<svg viewBox="0 0 450 230"><rect width="450" height="230" fill="#fff" rx="12"/>${lines}${circles}</svg>`;
+}
+function slopeFieldSvg(a,b){
+  const w=360,h=260,p=35; let seg=''; for(let i=0;i<13;i++){for(let j=0;j<9;j++){const x=-3+i*.5, y=-2+j*.5, m=a*x+b*y, ang=Math.atan(m), len=13, cx=p+i*(w-2*p)/12, cy=h-p-j*(h-2*p)/8; const dx=Math.cos(ang)*len/2, dy=Math.sin(ang)*len/2; seg+=`<line x1="${cx-dx}" y1="${cy+dy}" x2="${cx+dx}" y2="${cy-dy}" stroke="#1d4ed8"/>`;}}
+  return `<svg viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#fff" rx="12"/><line x1="${p}" y1="${h/2}" x2="${w-p}" y2="${h/2}" stroke="#94a3b8"/><line x1="${w/2}" y1="${p}" x2="${w/2}" y2="${h-p}" stroke="#94a3b8"/>${seg}</svg>`;
+}
+
+const GENERATORS = {
+  scientific(sp,style,rng,diff,diagrams){
+    const ctx=choice(rng,[...CONTEXTS.science,...CONTEXTS.geography]); const a=randInt(rng,12,98)/10; const k=randInt(rng, diff===3?7:4, diff===3?10:7); const b=randInt(rng,12,97)/10; const m=randInt(rng,2,8); const val=a*Math.pow(10,k); const pct=randInt(rng,2,8); const err=val*pct/100;
+    const stem=`In a ${ctx} study, a measurement is recorded as \\(${a}\\times10^{${k}}\\) units. A second quantity is \\(${b}\\times10^{${k-m}}\\) units.`;
+    const parts = style==='p2' ? [part(`Calculate the total of the two quantities in standard form.`,3),part(`The first measurement may have a percentage error of ${pct}%. Find the absolute error.`,3),part(`Comment on whether the second quantity is significant compared with the possible error in the first.`,2)] : [part(`Calculate \\(${a}\\times10^{${k}}+${b}\\times10^{${k-m}}\\), giving your answer in standard form.`,3),part(`Find ${pct}% of \\(${a}\\times10^{${k}}\\).`,2)];
+    const total=(a+b*Math.pow(10,-m))*Math.pow(10,k); const coeff=total/Math.pow(10,k);
+    const ms=`<p>Total \\(=(${a}+${b}\\times10^{-${m}})\\times10^{${k}}=${fmt(coeff,4)}\\times10^{${k}}\\).</p><p>Absolute error \\(=${pct}\\%\\times ${a}\\times10^{${k}}=${fmt(err,3)}\\).</p><p>The comparison should refer to relative sizes, using the calculated error and the second quantity.</p>`;
+    return qObj({stem,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Total: \\(${fmt(coeff,4)}\\times10^{${k}}\\); error: \\(${fmt(err,3)}\\).`,markscheme:ms});
+  },
+  sequences(sp,style,rng,diff){
+    const isGeo=sp.code.includes('1.3')||sp.code.includes('1.11'); const ctx=choice(rng,CONTEXTS.business); const a=randInt(rng,4,24); const n=randInt(rng,8,18); let parts,ms,ans;
+    if(isGeo){const r=choice(rng,[1.05,1.08,1.12,0.85,0.9]); const nth=a*Math.pow(r,n-1); const sumv=a*(1-Math.pow(r,n))/(1-r); parts=style==='p2'?[part(`A ${ctx} model starts with ${a} units and changes by a factor of ${r} each period. Write down a formula for the nth term.`,2),part(`Find the value in period ${n}.`,2),part(`Find the total over the first ${n} periods.`,3),part(`Interpret whether the model is growth or decay.`,1)]:[part(`For a geometric sequence with \\(u_1=${a}\\) and \\(r=${r}\\), find \\(u_{${n}}\\).`,2),part(`Find \\(S_{${n}}\\).`,3)]; ans=`\\(u_${n}=${fmt(nth,2)},\\ S_${n}=${fmt(sumv,2)}\\)`; ms=`<p>Use \\(u_n=ar^{n-1}\\), so \\(u_${n}=${a}(${r})^{${n-1}}=${fmt(nth,2)}\\).</p><p>Use \\(S_n=\\frac{a(1-r^n)}{1-r}\\), so \\(S_${n}=${fmt(sumv,2)}\\).</p>`;}
+    else {const d=randInt(rng,3,13); const nth=a+(n-1)*d; const sumv=n/2*(2*a+(n-1)*d); parts=style==='p2'?[part(`A ${ctx} has ${a} customers in week 1. The number increases by ${d} each week. Define an arithmetic model.`,2),part(`Find the number of customers in week ${n}.`,2),part(`Find the total number of customers over the first ${n} weeks.`,3),part(`State one limitation of this model.`,1)]:[part(`For an arithmetic sequence with \\(u_1=${a}\\) and common difference \\(d=${d}\\), find \\(u_{${n}}\\).`,2),part(`Find \\(S_{${n}}\\).`,3)]; ans=`\\(u_${n}=${fmt(nth)},\\ S_${n}=${fmt(sumv)}\\)`; ms=`<p>Use \\(u_n=a+(n-1)d\\), so \\(u_${n}=${a}+${n-1}(${d})=${nth}\\).</p><p>Use \\(S_n=\\frac{n}{2}(2a+(n-1)d)\\), so \\(S_${n}=${sumv}\\).</p>`;}
+    return qObj({stem:`Sequences are used to model ${ctx}.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:ans,markscheme:ms});
+  },
+  finance(sp,style,rng,diff){
+    const P=randInt(rng,8,45)*100; const rate=randInt(rng,25,75)/10; const years=randInt(rng,3,8); const n=choice(rng,[1,4,12]); const A=P*Math.pow(1+rate/100/n,n*years); const pay=randInt(rng,90,220); const loan=pay*(1-Math.pow(1+rate/100/12,-12*years))/(rate/100/12);
+    const stem=`A student is comparing financial options for a school project.`;
+    const parts=style==='p2'?[part(`An investment of $${P} earns ${rate}% interest per annum, compounded ${n===1?'annually':n===4?'quarterly':'monthly'}. Find its value after ${years} years.`,3),part(`A loan is repaid by monthly payments of $${pay} for ${years} years at ${rate}% per annum, compounded monthly. Find the present value of the loan.`,4),part(`Explain why technology is useful for amortization questions.`,1)]:[part(`Find the value of $${P} after ${years} years at ${rate}% p.a. compounded ${n===1?'annually':n===4?'quarterly':'monthly'}.`,3),part(`Give your answer to the nearest dollar.`,1)];
+    const ms=`<p>Investment: \\(A=P(1+\\frac{r}{100n})^{nt}=${P}(1+\\frac{${rate}}{100(${n})})^{${n*years}}=${fmt(A,2)}\\).</p><p>Loan present value: \\(PV=PMT\\frac{1-(1+i)^{-N}}{i}=${pay}\\frac{1-(1+${rate/100/12})^{-${12*years}}}{${rate/100/12}}=${fmt(loan,2)}\\).</p>`;
+    return qObj({stem,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Investment ≈ $${fmt(A,2)}; loan PV ≈ $${fmt(loan,2)}.`,markscheme:ms});
+  },
+  algebraTech(sp,style,rng,diff){
+    const a=randInt(rng,2,7), b=randInt(rng,3,12), c=randInt(rng,2,6), x=randInt(rng,2,8); const rhs=a*x+b; const logA=randInt(rng,2,9), logB=randInt(rng,2,9);
+    const parts= style==='p2'?[part(`Solve the equation \\(${a}x+${b}=${rhs}\\).`,2),part(`Use logarithm laws to write \\(\\log(${logA})+\\log(${logB})\\) as a single logarithm.`,2),part(`Solve \\(${c}^{t}=${c**3}\\).`,2),part(`State how technology could check your solutions.`,1)]:[part(`Solve \\(${a}x+${b}=${rhs}\\).`,2),part(`Simplify \\(\\log(${logA})+\\log(${logB})\\).`,2)];
+    return qObj({stem:`Solve the following algebraic expressions and equations.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(x=${x}\\), \\(\\log(${logA*logB})\\), \\(t=3\\).`,markscheme:`<p>Rearrange: \\(${a}x=${rhs-b}\\), so \\(x=${x}\\).</p><p>Use \\(\\log a+\\log b=\\log(ab)\\): \\(\\log(${logA*logB})\\).</p><p>Same base gives \\(t=3\\).</p>`});
+  },
+  complex(sp,style,rng,diff){
+    const a=randInt(rng,-6,6)||3, b=randInt(rng,2,8), c=randInt(rng,-5,5)||2, d=randInt(rng,1,7); const real=a*c-b*d, imag=a*d+b*c; const mod=Math.sqrt(a*a+b*b), arg=Math.atan2(b,a);
+    const parts=style==='p2'?[part(`Let \\(z=${a}+${b}i\\) and \\(w=${c}+${d}i\\). Find \\(zw\\).`,3),part(`Find the modulus and argument of \\(z\\).`,3),part(`Write \\(z\\) in modulus-argument form.`,2)]:[part(`For \\(z=${a}+${b}i\\), find \\(|z|\\) and \\(\\arg z\\), in radians.`,3),part(`Find the product \\(( ${a}+${b}i )(${c}+${d}i)\\).`,3)];
+    return qObj({stem:`Complex numbers can represent rotations and oscillations.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(zw=${real}${imag>=0?'+':''}${imag}i\\), \\(|z|=${fmt(mod,3)}\\), \\(\\arg z=${fmt(arg,3)}\\).`,markscheme:`<p>Multiply and use \\(i^2=-1\\): real part \\(${a*c}-${b*d}=${real}\\), imaginary part \\(${a*d}+${b*c}=${imag}\\).</p><p>\\(|z|=\\sqrt{${a}^2+${b}^2}=${fmt(mod,3)}\\), \\(\\arg z=\\tan^{-1}(${b}/${a})=${fmt(arg,3)}\\) with correct quadrant.</p>`});
+  },
+  matrices(sp,style,rng,diff){
+    const a=randInt(rng,1,4), b=randInt(rng,1,4), c=randInt(rng,1,4), d=randInt(rng,1,4); const p=randInt(rng,20,70)/100; const T=[[p,1-p],[1-p,p]]; const s0=[randInt(rng,30,80),randInt(rng,20,70)]; const s1=[T[0][0]*s0[0]+T[0][1]*s0[1],T[1][0]*s0[0]+T[1][1]*s0[1]]; const tr=a+d, det=a*d-b*c; const disc=tr*tr-4*det;
+    const parts=style==='p2'?[part(`Let \\(A=\\begin{pmatrix}${a}&${b}\\\\${c}&${d}\\end{pmatrix}\\). Find the characteristic polynomial.`,3),part(`Find the eigenvalues of \\(A\\), giving exact or decimal answers.`,3),part(`A transition matrix is \\(T=\\begin{pmatrix}${p}&${round(1-p,2)}\\\\${round(1-p,2)}&${p}\\end{pmatrix}\\). If \\(s_0=\\begin{pmatrix}${s0[0]}\\\\${s0[1]}\\end{pmatrix}\\), find \\(s_1=Ts_0\\).`,3)]:[part(`Calculate \\(\\begin{pmatrix}${p}&${round(1-p,2)}\\\\${round(1-p,2)}&${p}\\end{pmatrix}\\begin{pmatrix}${s0[0]}\\\\${s0[1]}\\end{pmatrix}\\).`,3),part(`State what the entries of a transition matrix column/row should sum to, depending on convention.`,1)];
+    const l1=(tr+Math.sqrt(Math.max(0,disc)))/2,l2=(tr-Math.sqrt(Math.max(0,disc)))/2;
+    return qObj({stem:`Matrices are used to model systems changing over time.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Characteristic polynomial \\(\\lambda^2-${tr}\\lambda+${det}\\); eigenvalues ≈ \\(${fmt(l1,3)}, ${fmt(l2,3)}\\); \\(s_1≈(${fmt(s1[0],2)},${fmt(s1[1],2)})^T\\).`,markscheme:`<p>\\(\\det(A-\\lambda I)=(${a}-\\lambda)(${d}-\\lambda)-${b*c}=\\lambda^2-${tr}\\lambda+${det}\\).</p><p>Use quadratic formula for eigenvalues.</p><p>Matrix multiplication gives \\(s_1=(${p}(${s0[0]})+${round(1-p,2)}(${s0[1]}), ${round(1-p,2)}(${s0[0]})+${p}(${s0[1]}))^T\\).</p>`});
+  },
+  line(sp,style,rng,diff,diagrams){
+    const x1=randInt(rng,-4,3), y1=randInt(rng,-5,5), m=choice(rng,[-3,-2,-1,1,2,3,0.5,-0.5]); const x2=x1+choice(rng,[2,4,6]); const y2=y1+m*(x2-x1); const c=y1-m*x1; const pred=randInt(rng,5,10); const ypred=m*pred+c; const svg=diagrams?axesSvg([[x1,y1],[x2,y2],[pred,ypred]],{labels:['A','B','P']}):'';
+    const parts=style==='p2'?[part(`The points \\(A(${x1},${fmt(y1)})\\) and \\(B(${x2},${fmt(y2)})\\) lie on a straight-line model. Find the gradient.`,2),part(`Find the equation of the line in the form \\(y=mx+c\\).`,3),part(`Use the model to predict \\(y\\) when \\(x=${pred}\\).`,2),part(`Comment on one danger of using the model outside the given range of data.`,1)]:[part(`Find the equation of the line through \\(( ${x1},${fmt(y1)} )\\) and \\(( ${x2},${fmt(y2)} )\\).`,4),part(`Find \\(y\\) when \\(x=${pred}\\).`,2)];
+    return qObj({stem:`A straight-line model is fitted to two data points.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(m=${fmt(m)}\\), \\(y=${fmt(m)}x ${pm(c)}\\), prediction \\(y=${fmt(ypred)}\\).`,markscheme:`<p>Gradient \\(m=\\frac{${fmt(y2)}-${fmt(y1)}}{${x2}-${x1}}=${fmt(m)}\\).</p><p>Use \\(y-y_1=m(x-x_1)\\) or substitution: \\(c=${fmt(c)}\\), so \\(y=${fmt(m)}x ${pm(c)}\\).</p><p>At \\(x=${pred}\\), \\(y=${fmt(ypred)}\\).</p>`});
+  },
+  function(sp,style,rng,diff,diagrams){
+    const a=choice(rng,[1,1,2,-1]); const h=randInt(rng,-3,3), k=randInt(rng,-4,4); const f=`${a===1?'':a===-1?'-':a}(x ${h>=0?'- '+h:'+ '+Math.abs(h)})^2 ${k>=0?'+ '+k:'- '+Math.abs(k)}`; const x=randInt(rng,-2,5); const fx=a*(x-h)**2+k; const r1=h-Math.sqrt(Math.max(0,-k/a)), r2=h+Math.sqrt(Math.max(0,-k/a)); let pts=[]; for(let xx=h-5;xx<=h+5;xx++) pts.push([xx,a*(xx-h)**2+k]); const svg=diagrams?axesSvg(pts):'';
+    const parts=style==='p2'?[part(`A function is given by \\(f(x)=${f}\\). State the coordinates of the vertex.`,2),part(`Find \\(f(${x})\\).`,2),part(`Use the graph or technology to find the zeros, if they exist.`,3),part(`State the domain and range for the model if it represents a physical height.`,2)]:[part(`For \\(f(x)=${f}\\), find the vertex and \\(f(${x})\\).`,4),part(`State whether the vertex is a maximum or minimum.`,1)];
+    return qObj({stem:`A quadratic function is used as a model.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Vertex \\(( ${h}, ${k} )\\); \\(f(${x})=${fmt(fx)}\\); zeros ${(-k/a)>=0?`≈ \\(${fmt(r1,3)}, ${fmt(r2,3)}\\)`:'do not exist in \\(\\mathbb R\\)'}.`,markscheme:`<p>The vertex form gives vertex \\((h,k)=(${h},${k})\\). Substitute \\(x=${x}\\): \\(f(${x})=${fmt(fx)}\\).</p><p>For zeros, solve \\(a(x-h)^2+k=0\\). ${(-k/a)>=0?`This gives \\(x=${h}\\pm\\sqrt{${fmt(-k/a)}}\\).`:'No real solutions since the square would need to be negative.'}</p>`});
+  },
+  modelling(sp,style,rng,diff,diagrams){
+    const ctx=choice(rng,[...CONTEXTS.science,...CONTEXTS.business,...CONTEXTS.geography]); const x1=0,x2=randInt(rng,4,8); const A=randInt(rng,30,80); const r=choice(rng,[1.08,1.12,1.18,0.82,0.88,0.93]); const y1=A, y2=round(A*Math.pow(r,x2),1); const pred=x2+randInt(rng,2,5); const ypred=A*Math.pow(r,pred); const data=[[0,round(y1,1)],[x2,round(y2,1)],[pred,round(ypred,1)]]; const svg=diagrams?scatterSvg(data):'';
+    const parts=style==='p2'?[part(`A ${ctx} data set is modelled by \\(y=ab^x\\). Given points \\((0,${round(y1,1)})\\) and \\(( ${x2},${round(y2,1)} )\\), find \\(a\\) and \\(b\\).`,4),part(`Use the model to predict \\(y\\) when \\(x=${pred}\\).`,2),part(`State whether interpolation or extrapolation is being used.`,1),part(`Give one contextual reason the model may fail later.`,1)]:[part(`For \\(y=ab^x\\) through \\((0,${round(y1,1)})\\) and \\(( ${x2},${round(y2,1)} )\\), find \\(a\\) and \\(b\\).`,4),part(`Predict \\(y\\) at \\(x=${pred}\\).`,2)];
+    return qObj({stem:`A model is being fitted to ${ctx} data.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(a=${A}\\), \\(b≈${fmt(r,3)}\\), prediction \\(y≈${fmt(ypred,2)}\\).`,markscheme:`<p>Since \\(x=0\\), \\(a=${A}\\). Then \\(${round(y2,1)}=${A}b^{${x2}}\\), so \\(b=(${round(y2/A,4)})^{1/${x2}}≈${fmt(r,3)}\\).</p><p>Prediction: \\(y=${A}(${fmt(r,3)})^{${pred}}≈${fmt(ypred,2)}\\).</p>`});
+  },
+  geo3d(sp,style,rng,diff,diagrams){
+    const l=randInt(rng,6,14), w=randInt(rng,4,10), h=randInt(rng,3,8); const diag=Math.sqrt(l*l+w*w+h*h); const vol=l*w*h; const stem=`A rectangular classroom is ${l} m long, ${w} m wide and ${h} m high.`;
+    const svg=diagrams?`<svg viewBox="0 0 420 240"><rect width="420" height="240" fill="#fff" rx="12"/><polygon points="80,70 280,70 340,120 140,120" fill="#eff6ff" stroke="#1d4ed8"/><polygon points="80,70 140,120 140,190 80,140" fill="#dbeafe" stroke="#1d4ed8"/><polygon points="140,120 340,120 340,190 140,190" fill="#f8fbff" stroke="#1d4ed8"/><line x1="80" y1="70" x2="340" y2="190" stroke="#dc2626" stroke-width="3" stroke-dasharray="6 4"/><text x="200" y="210" font-size="14">${l} m</text><text x="315" y="105" font-size="14">${w} m</text><text x="95" y="165" font-size="14">${h} m</text></svg>`:'';
+    const parts=style==='p2'?[part(`Find the volume of the classroom.`,2),part(`Find the length of the space diagonal from one lower corner to the opposite upper corner.`,3),part(`A cable of length ${Math.ceil(diag)} m is available. Will it reach? Justify your answer.`,2)]:[part(`Find the volume and the space diagonal.`,5)];
+    return qObj({stem,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Volume \\(${vol}\\,m^3\\); diagonal \\(${fmt(diag,2)}\\,m\\).`,markscheme:`<p>Volume \\(=${l}\\times${w}\\times${h}=${vol}\\).</p><p>Space diagonal \\(=\\sqrt{${l}^2+${w}^2+${h}^2}=\\sqrt{${l*l+w*w+h*h}}=${fmt(diag,2)}\\).</p>`});
+  },
+  trig(sp,style,rng,diff,diagrams){
+    const dist=randInt(rng,20,80); const ang=randInt(rng,22,58); const height=dist*Math.tan(ang*Math.PI/180); const svg=diagrams?triangleSvg(dist,null,ang,'right'):'';
+    const parts=style==='p2'?[part(`From a point on level ground, the angle of elevation to the top of a building is ${ang}°. The point is ${dist} m from the base. Find the height of the building.`,3),part(`The measured angle could be ±1°. Find the possible range of heights.`,3),part(`Explain why a labelled diagram is useful here.`,1)]:[part(`Find the height of a building when the angle of elevation is ${ang}° and the horizontal distance is ${dist} m.`,3)];
+    const low=dist*Math.tan((ang-1)*Math.PI/180), high=dist*Math.tan((ang+1)*Math.PI/180);
+    return qObj({stem:`A trigonometric model is used for measuring height.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Height ≈ \\(${fmt(height,2)}\\) m; range ≈ \\(${fmt(low,2)}\\) m to \\(${fmt(high,2)}\\) m.`,markscheme:`<p>Use \\(\\tan ${ang}^\\circ=\\frac{h}{${dist}}\\), so \\(h=${dist}\\tan ${ang}^\\circ=${fmt(height,2)}\\).</p><p>For the range, calculate \\(${dist}\\tan(${ang-1}^\\circ)\\) and \\(${dist}\\tan(${ang+1}^\\circ)\\).</p>`});
+  },
+  sector(sp,style,rng,diff,diagrams){
+    const r=randInt(rng,4,16), deg=randInt(rng,50,250); const rad=deg*Math.PI/180; const length=r*rad; const area=.5*r*r*rad; const useRad=sp.level==='AHL'||sp.code.includes('3.7')||sp.code.includes('3.8'); const angleText=useRad?`\\(${fmt(rad,3)}\\) radians`:`${deg}°`;
+    const svg=diagrams?`<svg viewBox="0 0 360 260"><rect width="360" height="260" fill="#fff" rx="12"/><path d="M180 145 L275 145 A95 95 0 0 0 180 50 Z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"/><circle cx="180" cy="145" r="3" fill="#111827"/><text x="222" y="134" font-size="15">r=${r}</text><text x="185" y="92" font-size="15">θ</text><text x="105" y="230" font-size="13">Diagram not to scale</text></svg>`:'';
+    const parts=style==='p2'?[part(`A circular sector has radius ${r} cm and central angle ${angleText}. Find the arc length.`,3),part(`Find the area of the sector.`,3),part(`State the formula used and whether the angle must be in radians.`,1)]:[part(`Find the arc length and sector area for radius ${r} cm and angle ${angleText}.`,5)];
+    return qObj({stem:`A designer uses a circular sector.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Arc length ≈ \\(${fmt(length,2)}\\) cm; area ≈ \\(${fmt(area,2)}\\) cm².`,markscheme:`<p>Convert if needed: \\(${deg}^\\circ=${fmt(rad,3)}\\) radians.</p><p>Arc length \\(s=r\\theta=${r}(${fmt(rad,3)})=${fmt(length,2)}\\).</p><p>Area \\(A=\\frac12 r^2\\theta=\\frac12(${r})^2(${fmt(rad,3)})=${fmt(area,2)}\\).</p>`});
+  },
+  voronoi(sp,style,rng,diff,diagrams){
+    const A=[randInt(rng,0,3),randInt(rng,0,3)], B=[A[0]+randInt(rng,4,8),A[1]+randInt(rng,2,7)]; const mid=[(A[0]+B[0])/2,(A[1]+B[1])/2]; const m=(B[1]-A[1])/(B[0]-A[0]); const mp=-1/m; const c=mid[1]-mp*mid[0]; const svg=diagrams?axesSvg([A,B,mid],{labels:['A','B','M']}):'';
+    const parts=style==='p2'?[part(`Two service points are at \\(A(${A[0]},${A[1]})\\) and \\(B(${B[0]},${B[1]})\\). Find the midpoint of \\(AB\\).`,2),part(`Find the gradient of the perpendicular bisector of \\(AB\\).`,2),part(`Find the equation of the perpendicular bisector.`,3),part(`Explain how this relates to a Voronoi edge.`,1)]:[part(`Find the perpendicular bisector of the segment from \\(${A[0]},${A[1]}\\) to \\(${B[0]},${B[1]}\\).`,5)];
+    return qObj({stem:`Voronoi diagrams use perpendicular bisectors to divide regions.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Midpoint \\(( ${fmt(mid[0])}, ${fmt(mid[1])} )\\); bisector \\(y=${fmt(mp,3)}x ${pm(round(c,3))}\\).`,markscheme:`<p>Midpoint \\(M=(\\frac{x_1+x_2}{2},\\frac{y_1+y_2}{2})=(${fmt(mid[0])},${fmt(mid[1])})\\).</p><p>Gradient of \\(AB=${fmt(m,3)}\\), so perpendicular gradient \\(=${fmt(mp,3)}\\).</p><p>Substitute midpoint into \\(y=mx+c\\) to find \\(c=${fmt(c,3)}\\).</p>`});
+  },
+  transformVector(sp,style,rng,diff,diagrams){
+    const ax=randInt(rng,-4,4), ay=randInt(rng,-4,4), bx=randInt(rng,-5,5)||2, by=randInt(rng,-5,5)||3; const cx=randInt(rng,-4,4), cy=randInt(rng,-4,4); const dot=bx*cx+by*cy; const mag1=Math.sqrt(bx*bx+by*by), mag2=Math.sqrt(cx*cx+cy*cy); const angle=Math.acos(Math.max(-1,Math.min(1,dot/(mag1*mag2))))*180/Math.PI;
+    const svg=diagrams?axesSvg([[0,0],[bx,by],[cx,cy]],{labels:['O','u','v']}):'';
+    const parts=style==='p2'?[part(`Let \\(\\mathbf{u}=\\begin{pmatrix}${bx}\\\\${by}\\end{pmatrix}\\) and \\(\\mathbf{v}=\\begin{pmatrix}${cx}\\\\${cy}\\end{pmatrix}\\). Find \\(\\mathbf{u}\\cdot\\mathbf{v}\\).`,2),part(`Find the angle between the two vectors.`,3),part(`A line has equation \\(\\mathbf{r}=\\begin{pmatrix}${ax}\\\\${ay}\\end{pmatrix}+\\lambda\\begin{pmatrix}${bx}\\\\${by}\\end{pmatrix}\\). Find the point when \\(\\lambda=2\\).`,2)]:[part(`Find the scalar product and angle between \\(\\mathbf{u}=(${bx},${by})\\) and \\(\\mathbf{v}=(${cx},${cy})\\).`,5)];
+    return qObj({stem:`Vectors model directions and movements.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Dot product \\(${dot}\\); angle \\(${fmt(angle,2)}^\\circ\\); point at λ=2 is \\(( ${ax+2*bx}, ${ay+2*by} )\\).`,markscheme:`<p>\\(\\mathbf{u}\\cdot\\mathbf{v}=${bx}(${cx})+${by}(${cy})=${dot}\\).</p><p>\\(\\cos\\theta=\\frac{\\mathbf{u}\\cdot\\mathbf{v}}{|u||v|}=\\frac{${dot}}{${fmt(mag1,3)}${fmt(mag2,3)}}\\), so \\(\\theta=${fmt(angle,2)}^\\circ\\).</p><p>Substitute \\(\\lambda=2\\) into the vector line.</p>`});
+  },
+  graphTheory(sp,style,rng,diff,diagrams){
+    const nodes=['A','B','C','D','E','F']; const edges=[['A','B',randInt(rng,3,9)],['A','D',randInt(rng,2,8)],['B','C',randInt(rng,4,10)],['B','D',randInt(rng,2,9)],['C','E',randInt(rng,2,8)],['C','F',randInt(rng,4,12)],['D','E',randInt(rng,3,9)],['E','F',randInt(rng,2,8)]]; const svg=diagrams?networkSvg(nodes,edges):'';
+    const degB=edges.filter(e=>e[0]==='B'||e[1]==='B').length; const weights=edges.map(e=>e[2]).sort((a,b)=>a-b); const mstLower=sum(weights.slice(0,5));
+    const parts=style==='p2'?[part(`For the weighted graph shown, state the degree of vertex B.`,1),part(`Use Kruskal's algorithm to find a minimum spanning tree. List the selected edges.`,5),part(`Explain why an MST has exactly ${nodes.length-1} edges.`,2)]:[part(`State the degree of vertex B and give a lower estimate for the weight of an MST by adding the five smallest available edge weights.`,3)];
+    return qObj({stem:`A network represents paths between locations.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Degree of B: ${degB}. MST found by Kruskal; the five smallest-edge lower sum is ${mstLower}.`,markscheme:`<p>Degree counts edges incident to B: ${degB}.</p><p>For Kruskal: order edges by weight, add the smallest edge that does not create a cycle, and stop after \\(n-1=${nodes.length-1}\\) edges. Award method marks for correct ordering and cycle rejection.</p>`});
+  },
+  data(sp,style,rng,diff,diagrams){
+    let vals=Array.from({length:12},()=>randInt(rng,20,78)).sort((a,b)=>a-b); if(diff===3) vals.push(randInt(rng,95,110)); const m=mean(vals), med=median(vals); const q1=median(vals.slice(0,Math.floor(vals.length/2))), q3=median(vals.slice(Math.ceil(vals.length/2))); const iqr=q3-q1, upper=q3+1.5*iqr; const outs=vals.filter(v=>v>upper); const svg=diagrams?boxplotSvg(vals):'';
+    const parts=style==='p2'?[part(`The data set is: ${vals.join(', ')}. Find the mean and median.`,3),part(`Find Q1, Q3 and the interquartile range.`,3),part(`Use the 1.5×IQR rule to identify any high outliers.`,3),part(`Suggest a suitable sampling method for collecting similar school data.`,1)]:[part(`For the data ${vals.join(', ')}, find the median and IQR.`,4),part(`Identify any high outliers using the 1.5×IQR rule.`,3)];
+    return qObj({stem:`A teacher collects a sample of data from students.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Mean \\(${fmt(m,2)}\\), median \\(${fmt(med)}\\), IQR \\(${fmt(iqr)}\\), high outliers: ${outs.length?outs.join(', '):'none'}.`,markscheme:`<p>Order the data. Mean \\(=\\frac{\\sum x}{n}=${fmt(m,2)}\\). Median \\(=${fmt(med)}\\).</p><p>\\(Q_1=${fmt(q1)}\\), \\(Q_3=${fmt(q3)}\\), \\(IQR=${fmt(iqr)}\\).</p><p>Upper fence \\(=Q_3+1.5IQR=${fmt(upper)}\\). Values above this are high outliers: ${outs.length?outs.join(', '):'none'}.</p>`});
+  },
+  correlation(sp,style,rng,diff,diagrams){
+    const n=7; const slope=randInt(rng,2,7); const intercept=randInt(rng,5,25); const data=Array.from({length:n},(_,i)=>[i+1, intercept+slope*(i+1)+randInt(rng,-4,4)]); const mx=mean(data.map(d=>d[0])), my=mean(data.map(d=>d[1])); const Sxx=sum(data.map(d=>(d[0]-mx)**2)), Sxy=sum(data.map(d=>(d[0]-mx)*(d[1]-my))); const a=Sxy/Sxx, b=my-a*mx; const r=Sxy/Math.sqrt(Sxx*sum(data.map(d=>(d[1]-my)**2))); const pred=randInt(rng,8,11); const svg=diagrams?scatterSvg(data,{a,b}):'';
+    const table=data.map(d=>`(${d[0]}, ${d[1]})`).join(', ');
+    const parts=style==='p2'?[part(`The data points are ${table}. Use technology or calculation to find the least-squares regression line \\(y=ax+b\\).`,4),part(`Find Pearson's correlation coefficient.`,2),part(`Predict \\(y\\) when \\(x=${pred}\\).`,2),part(`Comment on the reliability of this prediction.`,1)]:[part(`For the data ${table}, find the regression line and correlation coefficient.`,5)];
+    return qObj({stem:`A scatter diagram is used to investigate a relationship.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(y=${fmt(a,3)}x ${pm(round(b,3))}\\), \\(r=${fmt(r,3)}\\), prediction \\(${fmt(a*pred+b,2)}\\).`,markscheme:`<p>Use regression technology or formulas. Line: \\(y=${fmt(a,3)}x ${pm(round(b,3))}\\). Pearson \\(r=${fmt(r,3)}\\).</p><p>Prediction at \\(x=${pred}\\): \\(y=${fmt(a*pred+b,2)}\\). Comment should mention extrapolation if outside observed range.</p>`});
+  },
+  probability(sp,style,rng,diff,diagrams){
+    const pA=randInt(rng,25,65)/100, pBgA=randInt(rng,35,85)/100, pBgNot=randInt(rng,10,45)/100; const pB=pA*pBgA+(1-pA)*pBgNot; const cond=pA*pBgA/pB; const svg=diagrams?treeSvg(pA,pBgA,pBgNot):'';
+    const parts=style==='p2'?[part(`The tree diagram shows events A and B. Find \\(P(B)\\).`,3),part(`Find \\(P(A\\mid B)\\).`,3),part(`Explain whether A and B appear independent.`,2)]:[part(`Given \\(P(A)=${pA}\\), \\(P(B|A)=${pBgA}\\), and \\(P(B|A')=${pBgNot}\\), find \\(P(B)\\) and \\(P(A|B)\\).`,5)];
+    return qObj({stem:`A probability model is shown.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(P(B)=${fmt(pB,3)}\\), \\(P(A|B)=${fmt(cond,3)}\\).`,markscheme:`<p>\\(P(B)=P(A)P(B|A)+P(A')P(B|A')=${pA}(${pBgA})+${round(1-pA,2)}(${pBgNot})=${fmt(pB,3)}\\).</p><p>\\(P(A|B)=\\frac{P(A\\cap B)}{P(B)}=\\frac{${pA}(${pBgA})}{${fmt(pB,3)}}=${fmt(cond,3)}\\).</p>`});
+  },
+  distribution(sp,style,rng,diff,diagrams){
+    if(sp.code.includes('4.17')){const lam=randInt(rng,25,75)/10; const k=randInt(rng,2,7); const p=poissonProb(lam,k); const cdf=sum(Array.from({length:k+1},(_,i)=>poissonProb(lam,i))); return qObj({stem:`Calls arrive at a help desk according to a Poisson model with mean ${lam} per hour.`,parts:[part(`Find the probability of exactly ${k} calls in one hour.`,3),part(`Find the probability of at most ${k} calls in one hour.`,3)],marks:6,answer:`Exactly: ${fmt(p,4)}; at most: ${fmt(cdf,4)}.`,markscheme:`<p>Use \\(P(X=k)=e^{-\\lambda}\\frac{\\lambda^k}{k!}\\).</p><p>\\(P(X=${k})=e^{-${lam}}\\frac{${lam}^{${k}}}{${k}!}=${fmt(p,4)}\\).</p><p>Sum probabilities from 0 to ${k}: ${fmt(cdf,4)}.</p>`});}
+    if(sp.code.includes('4.8')){const n=randInt(rng,8,18), p=randInt(rng,25,65)/100, k=randInt(rng,2,Math.min(8,n)); const prob=binomProb(n,p,k); const meanv=n*p; return qObj({stem:`A basketball player has probability ${p} of scoring each shot. Assume independent shots.`,parts:[part(`State a suitable distribution for the number of scored shots in ${n} attempts.`,2),part(`Find the probability of exactly ${k} successful shots.`,3),part(`Find the expected number of successful shots.`,2)],marks:7,answer:`\\(X\\sim B(${n},${p})\\), \\(P(X=${k})=${fmt(prob,4)}\\), \\(E(X)=${fmt(meanv,2)}\\).`,markscheme:`<p>\\(X\\sim B(n,p)=B(${n},${p})\\).</p><p>\\(P(X=${k})=\\binom{${n}}{${k}}${p}^{${k}}(1-${p})^{${n-k}}=${fmt(prob,4)}\\).</p><p>\\(E(X)=np=${fmt(meanv,2)}\\).</p>`});}
+    const mu=randInt(rng,45,80), sg=randInt(rng,5,14), x=mu+randInt(rng,2,14); const prob=1-normCdf(x,mu,sg); const svg=diagrams?normalSvg(mu,sg,x):'';
+    const parts=style==='p2'?[part(`A variable \\(X\\) is normally distributed with mean ${mu} and standard deviation ${sg}. Find \\(P(X>${x})\\).`,3),part(`Sketch or interpret the region represented by this probability.`,2),part(`Find the z-score corresponding to ${x}.`,2)]:[part(`For \\(X\\sim N(${mu},${sg}^2)\\), find \\(P(X>${x})\\).`,3)];
+    return qObj({stem:`A continuous measurement is modelled by a normal distribution.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`z-score \\(${fmt((x-mu)/sg,3)}\\); probability \\(${fmt(prob,4)}\\).`,markscheme:`<p>Standardize: \\(z=\\frac{${x}-${mu}}{${sg}}=${fmt((x-mu)/sg,3)}\\).</p><p>\\(P(X>${x})=1-\\Phi(${fmt((x-mu)/sg,3)})=${fmt(prob,4)}\\).</p>`});
+  },
+  hypothesis(sp,style,rng,diff){
+    const n=randInt(rng,40,90), p0=0.5, x=randInt(rng,Math.ceil(n*.58),Math.ceil(n*.72)); const pval=sum(Array.from({length:n-x+1},(_,i)=>binomProb(n,p0,x+i))); const sig=0.05;
+    const parts=style==='p2'?[part(`A student claims a new strategy improves success above 50%. In ${n} trials, there are ${x} successes. Write suitable hypotheses.`,2),part(`Using \\(X\\sim B(${n},0.5)\\), find the p-value for a one-tailed test.`,3),part(`State the conclusion at the 5% significance level in context.`,3)]:[part(`For a one-tailed binomial test with \\(n=${n}\\), \\(p_0=0.5\\), and observed \\(x=${x}\\), find the p-value and conclude at 5%.`,5)];
+    return qObj({stem:`A hypothesis test is carried out on trial data.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`p-value \\(${fmt(pval,4)}\\); ${pval<sig?'reject':'do not reject'} \\(H_0\\) at 5%.`,markscheme:`<p>\\(H_0:p=0.5\\), \\(H_1:p>0.5\\).</p><p>p-value \\(=P(X\\ge ${x})\\) for \\(X\\sim B(${n},0.5)\\), giving ${fmt(pval,4)}.</p><p>Since ${fmt(pval,4)} ${pval<sig?'<':'>='} 0.05, ${pval<sig?'reject':'do not reject'} \\(H_0\\). Conclusion must be in context.</p>`});
+  },
+  calculus(sp,style,rng,diff,diagrams){
+    const a=randInt(rng,1,4), b=randInt(rng,-5,5)||3, c=randInt(rng,-8,8); const x0=randInt(rng,1,5); const fx=a*x0*x0+b*x0+c; const der=2*a*x0+b; const intA=a/3, intB=b/2; const u=randInt(rng,2,5), v=u+randInt(rng,2,5); const area=(a/3)*(v**3-u**3)+(b/2)*(v**2-u**2)+c*(v-u);
+    let pts=[]; for(let x=-4;x<=6;x++) pts.push([x,a*x*x+b*x+c]); const svg=diagrams?axesSvg(pts):'';
+    const parts=style==='p2'?[part(`For \\(f(x)=${a}x^2 ${pm(b)}x ${pm(c)}\\), find \\(f'(x)\\).`,2),part(`Find the equation of the tangent to the curve at \\(x=${x0}\\).`,4),part(`Find \\(\\int_${u}^{${v}} f(x)\\,dx\\).`,4)]:[part(`Differentiate \\(f(x)=${a}x^2 ${pm(b)}x ${pm(c)}\\) and find the gradient at \\(x=${x0}\\).`,3),part(`Find the equation of the tangent at \\(x=${x0}\\).`,3)];
+    return qObj({stem:`A polynomial curve is used in a calculus problem.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`\\(f'(x)=${2*a}x ${pm(b)}\\); tangent \\(y-${fx}=${der}(x-${x0})\\); integral \\(${fmt(area,3)}\\).`,markscheme:`<p>Differentiate term-by-term: \\(f'(x)=${2*a}x ${pm(b)}\\).</p><p>At \\(x=${x0}\\), \\(y=${fx}\\), gradient \\(${der}\\). Tangent: \\(y-${fx}=${der}(x-${x0})\\).</p><p>Antiderivative \\(F(x)=\\frac{${a}}{3}x^3 ${pm(round(b/2,3))}x^2 ${pm(c)}x\\). Then \\(F(${v})-F(${u})=${fmt(area,3)}\\).</p>`});
+  },
+  optimisation(sp,style,rng,diff,diagrams){
+    const price=randInt(rng,40,80); const cost=randInt(rng,8,25); const q0=randInt(rng,80,180); const k=randInt(rng,1,4); // demand q = q0 - kx, price increases by x
+    const xOpt=(q0-k*(cost-price))/(2*k); const profit=(price+xOpt-cost)*(q0-k*xOpt);
+    const parts=style==='p2'?[part(`A company sells an item for $${price}. If the price is increased by $x, demand is modelled by \\(q=${q0}-${k}x\\). The cost per item is $${cost}. Show that profit is a quadratic function of \\(x\\).`,3),part(`Find the value of \\(x\\) that maximizes profit.`,4),part(`Find the maximum profit.`,2)]:[part(`For \\(P(x)=(${price}+x-${cost})(${q0}-${k}x)\\), find the value of \\(x\\) that maximizes \\(P\\).`,4)];
+    return qObj({stem:`Optimisation is used in a pricing problem.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Optimal increase \\(x≈${fmt(xOpt,2)}\\); maximum profit ≈ $${fmt(profit,2)}.`,markscheme:`<p>Expand: \\(P(x)=(${price-cost}+x)(${q0}-${k}x)=-${k}x^2+(${q0}-${k*(price-cost)})x+${(price-cost)*q0}\\).</p><p>The maximum of \\(ax^2+bx+c\\) occurs at \\(x=-\\frac{b}{2a}=${fmt(xOpt,2)}\\).</p><p>Substitute to find \\(P_{max}=${fmt(profit,2)}\\).</p>`});
+  },
+  trapezoid(sp,style,rng,diff){
+    const h=randInt(rng,1,3), n=4; const y=Array.from({length:n+1},()=>randInt(rng,4,20)); const area=h*(0.5*y[0]+sum(y.slice(1,n))+0.5*y[n]);
+    const rows=y.map((yy,i)=>`\\(x=${i*h}, y=${yy}\\)`).join(', ');
+    const parts=style==='p2'?[part(`The table gives ${rows}. Use the trapezoidal rule with interval width ${h} to estimate the area under the graph.`,4),part(`Explain one reason this is an approximation.`,1)]:[part(`Use the trapezoidal rule for ${rows}, with interval width ${h}.`,4)];
+    return qObj({stem:`A table of data is used to approximate an area.`,parts,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`Area estimate \\(${fmt(area,2)}\\) square units.`,markscheme:`<p>Use \\(A\\approx h\\left(\\frac12 y_0+y_1+\\cdots+y_{n-1}+\\frac12y_n\\right)\\).</p><p>\\(A=${h}(0.5(${y[0]})+${y.slice(1,n).join('+')}+0.5(${y[n]}))=${fmt(area,2)}\\).</p>`});
+  },
+  diffeq(sp,style,rng,diff,diagrams){
+    const a=randInt(rng,1,3), b=randInt(rng,-2,2); const x0=0,y0=randInt(rng,1,5), h=0.2, steps=randInt(rng,3,5); let x=x0,y=y0; for(let i=0;i<steps;i++){y=y+h*(a*x+b*y); x+=h;} const svg=diagrams?slopeFieldSvg(a,b):'';
+    const parts=style==='p2'?[part(`A differential equation is \\(\\frac{dy}{dx}=${a}x ${pm(b)}y\\), with \\(y(0)=${y0}\\). Use Euler's method with step size ${h} for ${steps} steps.`,5),part(`Interpret what a slope field shows for this equation.`,2)]:[part(`Use Euler's method for \\(\\frac{dy}{dx}=${a}x ${pm(b)}y\\), \\(y(0)=${y0}\\), step ${h}, for ${steps} steps.`,5)];
+    return qObj({stem:`A differential equation is solved numerically.`,parts,svg,marks:parts.reduce((s,p)=>s+p.marks,0),answer:`After ${steps} steps, \\(x=${fmt(x,1)}\\), \\(y≈${fmt(y,4)}\\).`,markscheme:`<p>Euler update: \\(y_{n+1}=y_n+h f(x_n,y_n)\\), where \\(f(x,y)=${a}x ${pm(b)}y\\).</p><p>Starting at \\((0,${y0})\\), repeat ${steps} times with \\(h=${h}\\). Final estimate: \\(y≈${fmt(y,4)}\\) at \\(x=${fmt(x,1)}\\).</p>`});
+  }
+};
+
+function topicTitle(id){return (TOPICS.find(t=>t.id===id)||{title:id}).title;}
+function styleLabel(style){return style==='p3'?'HL Paper 3 extended problem-solving':style==='p2'?'Paper 2 extended response':'Paper 1 short response';}
+function addMeta(q, sp, style, rng){
+  q.syllabus=sp.code; q.topic=sp.topic; q.level=sp.level; q.label=sp.label; q.paperStyle=styleLabel(style); q.id=`${sp.code.replace(/\s+/g,'-')}-${Math.floor(rng()*1e8).toString(36)}`;
+  q.marks=q.parts.reduce((s,p)=>s+p.marks,0);
+  return q;
+}
+function tableHtml(headers, rows){return `<table style="border-collapse:collapse;margin:.7rem 0;width:100%;max-width:720px"><thead><tr>${headers.map(h=>`<th style="border:1px solid #cbd5e1;padding:6px;background:#f8fafc">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td style="border:1px solid #cbd5e1;padding:6px;text-align:center">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+function miniData(rng,n=6,start=10,step=4,noise=3){return Array.from({length:n},(_,i)=>[i,start+step*i+randInt(rng,-noise,noise)]);}
+function linearRegression(data){const mx=mean(data.map(d=>d[0])), my=mean(data.map(d=>d[1])); const Sxx=sum(data.map(d=>(d[0]-mx)**2)); const Sxy=sum(data.map(d=>(d[0]-mx)*(d[1]-my))); const a=Sxy/Sxx, b=my-a*mx; return {a,b};}
+function richContext(rng){return choice(rng,[...CONTEXTS.science,...CONTEXTS.business,...CONTEXTS.sport,...CONTEXTS.geography,'school canteen data','campus navigation','library loans','recycling data','sports day results','air-conditioner usage']);}
+function openMarkingNotes(q, extra=''){
+  return `${q.markscheme}<p><strong>Problem-solving / communication marks:</strong> award credit for a clear method, appropriate technology use, labelled variables, sensible rounding, and a conclusion in context. ${extra}</p>`;
+}
+
+function bespokeQuestion(sp,style,rng,diff,diagrams){
+  const code=sp.code, ctx=richContext(rng);
+  // Topic 1: number and algebra variants
+  if(code==='SL 1.5' || code==='AHL 1.9' || code==='AHL 1.10'){
+    const a=randInt(rng,2,6), b=randInt(rng,2,5), x=randInt(rng,2,5), y=randInt(rng,1,4);
+    if(code==='SL 1.5'){
+      const ansPow=a*x-b*y;
+      const parts=style==='p2'?[part(`Simplify \\(\\frac{m^{${a*x}}n^{${b+y}}}{m^{${b*y}}n^{${y}}}\\).`,3),part(`Evaluate your expression when \\(m=${a}\\) and \\(n=${b}\\).`,2),part(`Explain one exponent law used.`,1)]:[part(`Simplify \\(\\frac{x^{${a*x}}}{x^{${b*y}}}\\).`,2),part(`Simplify \\((y^{${b}})^{${x}}\\).`,2)];
+      return qObj({stem:`Exponent laws are used to simplify a model in ${ctx}.`,parts,answer:`Main power of \\(m\\): \\(m^{${ansPow}}\\); \\((y^${b})^${x}=y^{${b*x}}\\).`,markscheme:`<p>Use \\(a^p/a^q=a^{p-q}\\) and \\((a^p)^q=a^{pq}\\).</p><p>For the first expression, powers of the same base are subtracted. Powers of \\(n\\) simplify similarly.</p>`});
+    }
+    if(code==='AHL 1.9'){
+      const p1=a*b, p2=a, val=b;
+      const parts=style==='p2'?[part(`Use logarithm laws to simplify \\(\\log_${a}(${p1})-\\log_${a}(${p2})\\).`,2),part(`Solve \\(\\log_${a}(x)=${x}\\) for \\(x\\).`,2),part(`Write \\(2\\log(${b})+\\log(${x})\\) as a single logarithm.`,2)]:[part(`Simplify \\(\\log(${b})+\\log(${x})\\).`,2),part(`Solve \\(\\log_${a}(x)=${x}\\).`,2)];
+      return qObj({stem:`Logarithms are used to undo exponential relationships.`,parts,answer:`\\(\\log_${a}(${val})\\); \\(x=${a**x}\\); \\(\\log(${b*b*x})\\).`,markscheme:`<p>Use \\(\\log A-\\log B=\\log(A/B)\\), \\(\\log(A)+\\log(B)=\\log(AB)\\), and \\(k\\log A=\\log(A^k)\\).</p><p>\\(\\log_${a}(x)=${x}\\Rightarrow x=${a}^{${x}}=${a**x}\\).</p>`});
+    }
+    const qden=choice(rng,[2,3,4]); const pow=randInt(rng,2,5); const n=Math.pow(pow,qden);
+    return qObj({stem:`Rational exponents appear when modelling scaling laws.`,parts:[part(`Evaluate \\(${n}^{1/${qden}}\\).`,2),part(`Simplify \\(x^{${a}/${qden}}x^{${b}/${qden}}\\).`,2),part(`Write \\(\\sqrt[${qden}]{x^{${a+b}}}\\) using rational exponent notation.`,2)],answer:`\\(${pow}\\); \\(x^{${frac(a+b,qden)}}\\); \\(x^{${frac(a+b,qden)}}\\).`,markscheme:`<p>Use \\(a^{1/n}=\\sqrt[n]{a}\\) and add indices when multiplying powers with the same base.</p>`});
+  }
+  if(code==='AHL 1.12' || code==='AHL 1.13'){
+    const a=randInt(rng,-5,5)||3, b=randInt(rng,2,7), c=randInt(rng,-4,4)||2, d=randInt(rng,1,5); const mod=Math.sqrt(a*a+b*b), arg=Math.atan2(b,a); const product=[a*c-b*d,a*d+b*c];
+    const parts=code==='AHL 1.12'?[part(`Let \\(z=${a}+${b}i\\) and \\(w=${c}+${d}i\\). Find \\(z+w\\).`,2),part(`Find \\(zw\\).`,3),part(`Find \\(\\overline{z}\\) and \\(|z|\\).`,3)]:[part(`For \\(z=${a}+${b}i\\), find the modulus and argument.`,3),part(`Write \\(z\\) in polar form.`,2),part(`Use De Moivre's theorem to describe how \\(z^n\\) would be found.`,2)];
+    return qObj({stem:`Complex numbers are used to describe two-dimensional rotations.`,parts,answer:`\\(z+w=${a+c}+${b+d}i\\), \\(zw=${product[0]}${product[1]>=0?'+':''}${product[1]}i\\), \\(|z|=${fmt(mod,3)}\\), \\(\\arg z=${fmt(arg,3)}\\).`,markscheme:`<p>Add components for \\(z+w\\). Multiply and use \\(i^2=-1\\) for \\(zw\\).</p><p>\\(|z|=\\sqrt{a^2+b^2}\\), \\(\\arg z=\\tan^{-1}(b/a)\\) with correct quadrant. Polar form: \\(r(\\cos\\theta+i\\sin\\theta)\\).</p>`});
+  }
+  if(code==='AHL 1.14' || code==='AHL 1.15' || code==='AHL 4.19'){
+    if(code==='AHL 4.19'){
+      const p=randInt(rng,55,85)/100, q=randInt(rng,15,45)/100; const T=[[p,1-q],[1-p,q]]; const s0=[randInt(rng,60,130),randInt(rng,30,90)]; const s1=[T[0][0]*s0[0]+T[0][1]*s0[1],T[1][0]*s0[0]+T[1][1]*s0[1]];
+      return qObj({stem:`A two-state Markov chain models how students choose between bus and bike travel.`,parts:[part(`Write down the transition matrix \\(T=\\begin{pmatrix}${p}&${round(1-q,2)}\\${round(1-p,2)}&${q}\\end{pmatrix}\\). State what each column represents.`,2),part(`Given \\(s_0=\\begin{pmatrix}${s0[0]}\\${s0[1]}\\end{pmatrix}\\), calculate \\(s_1=Ts_0\\).`,3),part(`Explain what a long-term steady state would mean in this context.`,2)],answer:`\\(s_1≈(${fmt(s1[0],2)},${fmt(s1[1],2)})^T\\).`,markscheme:`<p>Multiply rows of \\(T\\) by the state vector. First entry \\(=${p}(${s0[0]})+${round(1-q,2)}(${s0[1]})=${fmt(s1[0],2)}\\). Second entry \\(=${round(1-p,2)}(${s0[0]})+${q}(${s0[1]})=${fmt(s1[1],2)}\\).</p><p>Steady state means the proportions remain unchanged after applying \\(T\\).</p>`});
+    }
+    const a=randInt(rng,1,5), b=randInt(rng,-3,4)||2, c=randInt(rng,-2,4)||1, d=randInt(rng,1,5); const tr=a+d, det=a*d-b*c, disc=tr*tr-4*det, l1=(tr+Math.sqrt(Math.max(0,disc)))/2, l2=(tr-Math.sqrt(Math.max(0,disc)))/2;
+    const parts=code==='AHL 1.14'?[part(`Let \\(A=\\begin{pmatrix}${a}&${b}\\${c}&${d}\\end{pmatrix}\\) and \\(B=\\begin{pmatrix}${d}&${c}\\${b}&${a}\\end{pmatrix}\\). Find \\(A+B\\).`,2),part(`Find \\(AB\\).`,3),part(`Find \\(\\det(A)\\).`,2)]:[part(`For \\(A=\\begin{pmatrix}${a}&${b}\\${c}&${d}\\end{pmatrix}\\), find the characteristic polynomial.`,3),part(`Find the eigenvalues of \\(A\\).`,3),part(`State why eigenvalues can be useful for repeated transformations.`,1)];
+    return qObj({stem:`Matrices are used to represent transformations and systems.`,parts,answer:`\\(\\det(A)=${det}\\); characteristic polynomial \\(\\lambda^2-${tr}\\lambda+${det}\\); eigenvalues ≈ ${fmt(l1,3)}, ${fmt(l2,3)}.`,markscheme:`<p>For multiplication, use row-by-column products. \\(\\det(A)=ad-bc=${a*d}-${b*c}=${det}\\).</p><p>Characteristic polynomial: \\(\\lambda^2-\\operatorname{tr}(A)\\lambda+\\det(A)\\). Apply the quadratic formula for the eigenvalues.</p>`});
+  }
+
+  // Topic 2: functions and modelling variants
+  if(['SL 2.2','SL 2.3','SL 2.4','AHL 2.7','AHL 2.8'].includes(code)){
+    const a=choice(rng,[1,2,-1]), h=randInt(rng,-3,3), k=randInt(rng,-4,5), x=randInt(rng,-2,5); const fx=a*(x-h)**2+k; let pts=[]; for(let xx=h-5;xx<=h+5;xx++) pts.push([xx,a*(xx-h)**2+k]); const svg=diagrams?axesSvg(pts):'';
+    if(code==='AHL 2.7'){
+      const m=randInt(rng,2,5), c=randInt(rng,-4,4); const n=randInt(rng,2,4), d=randInt(rng,-3,3); const comp=m*(n*x+d)+c;
+      return qObj({stem:`Composite and inverse functions are used to connect two stages of a model.`,parts:[part(`Let \\(f(x)=${m}x${pm(c)}\\) and \\(g(x)=${n}x${pm(d)}\\). Find \\(f(g(x))\\).`,3),part(`Find \\(f^{-1}(x)\\).`,3),part(`Evaluate \\(f(g(${x}))\\).`,2)],answer:`\\(f(g(x))=${m*n}x${pm(m*d+c)}\\); \\(f^{-1}(x)=\\frac{x${pm(-c)}}{${m}}\\); value \\(${comp}\\).`,markscheme:`<p>Substitute \\(g(x)\\) into \\(f\\). For the inverse, set \\(y=${m}x${pm(c)}\\), swap variables and solve for \\(y\\).</p>`});
+    }
+    if(code==='AHL 2.8'){
+      return qObj({stem:`The graph of \\(y=x^2\\) is transformed.`,parts:[part(`Describe the transformation from \\(y=x^2\\) to \\(y=${a}(x${h>=0?'-'+h:'+'+Math.abs(h)})^2${pm(k)}\\).`,4),part(`State the new vertex.`,2),part(`Sketch the transformed graph.`,2)],svg,answer:`Translation to \\((${h},${k})\\), vertical scale/reflection depending on \\(a=${a}\\). Vertex \\((${h},${k})\\).`,markscheme:`<p>Vertex form identifies horizontal shift \\(h\\), vertical shift \\(k\\), and vertical scale/reflection \\(a\\).</p>`});
+    }
+    const rootInfo=(-k/a)>=0?`zeros \\(x=${fmt(h-Math.sqrt(-k/a),3)}, ${fmt(h+Math.sqrt(-k/a),3)}\\)`:'no real zeros';
+    const extra=code==='SL 2.2'?'State a suitable domain and range.':code==='SL 2.3'?'Sketch the graph and identify the axis of symmetry.':'Identify the vertex, zeros and y-intercept.';
+    return qObj({stem:`A quadratic function is given by \\(f(x)=${a}(x${h>=0?'-'+h:'+'+Math.abs(h)})^2${pm(k)}\\).`,parts:[part(`Find \\(f(${x})\\).`,2),part(extra,3),part(`Interpret one key feature in a modelling context.`,2)],svg,answer:`\\(f(${x})=${fmt(fx)}\\); vertex \\((${h},${k})\\); ${rootInfo}.`,markscheme:`<p>Substitute \\(x=${x}\\). Vertex form gives \\((h,k)=(${h},${k})\\). Solve \\(${a}(x-${h})^2+${k}=0\\) for zeros when possible.</p>`});
+  }
+  if(['SL 2.5','SL 2.6','AHL 2.9','AHL 2.10'].includes(code)){
+    const data=miniData(rng,6,randInt(rng,18,40),randInt(rng,3,7),4); const reg=linearRegression(data); const pred=7; const table=tableHtml(['x',...data.map(d=>d[0])], [['y',...data.map(d=>d[1])]]); const svg=diagrams?scatterSvg(data,reg):'';
+    if(code==='AHL 2.10'){
+      const A=randInt(rng,20,60), r=choice(rng,[1.12,1.18,0.82,0.88]), t=randInt(rng,4,8), y=A*Math.pow(r,t); return qObj({stem:`An exponential model is linearised using logarithms.`,parts:[part(`For \\(y=${A}(${r})^x\\), show that \\(\\ln y\\) is linear in \\(x\\).`,3),part(`Find \\(y\\) when \\(x=${t}\\).`,2),part(`Explain how a plot of \\(x\\) against \\(\\ln y\\) helps test the model.`,2)],answer:`\\(\\ln y=\\ln(${A})+x\\ln(${r})\\); \\(y≈${fmt(y,2)}\\).`,markscheme:`<p>Taking logs gives a straight line with intercept \\(\\ln A\\) and gradient \\(\\ln r\\). Substitute \\(x=${t}\\) into the model.</p>`});
+    }
+    const parts=style==='p2'?[part(`The data are shown: ${table} Find a linear regression model \\(y=ax+b\\).`,3),part(`Use the model to predict \\(y\\) when \\(x=${pred}\\).`,2),part(`Comment on the reliability of the prediction.`,2)]:[part(`For the data ${table} find a linear regression equation.`,3),part(`Find the predicted value at \\(x=${pred}\\).`,2)];
+    return qObj({stem:`A ${ctx} data set is modelled.`,parts,svg,answer:`\\(y=${fmt(reg.a,3)}x${pm(round(reg.b,3))}\\); prediction \\(${fmt(reg.a*pred+reg.b,2)}\\).`,markscheme:`<p>Use regression technology or formulae to find \\(a=${fmt(reg.a,3)}\\), \\(b=${fmt(reg.b,3)}\\). Prediction at \\(x=${pred}\\): ${fmt(reg.a*pred+reg.b,2)}.</p>`});
+  }
+
+  // Topic 3: geometry, trig, vectors and graph theory variants
+  if(code==='AHL 3.8'){
+    const deg=choice(rng,[30,45,60,120,135,150,210,225,240,300]); const rad=deg*Math.PI/180; const sinv=round(Math.sin(rad),3), cosv=round(Math.cos(rad),3);
+    return qObj({stem:`The unit circle is used to define trigonometric ratios.`,parts:[part(`Convert ${deg}° to radians.`,2),part(`Find \\(\\sin ${deg}^\\circ\\) and \\(\\cos ${deg}^\\circ\\).`,3),part(`State one related angle with the same sine value.`,2)],answer:`Radians \\(${fmt(deg/180,3)}\\pi\\); \\(\\sin≈${sinv}\\), \\(\\cos≈${cosv}\\).`,markscheme:`<p>Use \\(\\theta_{rad}=\\theta_{deg}\\pi/180\\). Values are read from the unit circle with correct quadrant signs.</p>`});
+  }
+  if(['SL 3.4','AHL 3.7'].includes(code)){
+    const r=randInt(rng,5,16), theta=code==='AHL 3.7'?choice(rng,[Math.PI/6,Math.PI/4,Math.PI/3,1.2,1.5]):randInt(rng,35,140); const rad=code==='AHL 3.7'?theta:theta*Math.PI/180; const arc=r*rad, area=.5*r*r*rad; const svg=diagrams?`<svg viewBox="0 0 360 250"><rect width="360" height="250" fill="#fff" rx="12"/><path d="M180 145 L285 145 A105 105 0 0 0 220 55 Z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"/><text x="225" y="135" font-size="15">r=${r}</text><text x="188" y="93" font-size="15">θ</text><text x="100" y="225" font-size="13">Diagram not to scale</text></svg>`:'';
+    return qObj({stem:`A circular sector is used in a design problem.`,parts:[part(`Find the arc length of the sector.`,3),part(`Find the area of the sector.`,3),part(`State whether your calculation used degrees or radians.`,1)],svg,answer:`Arc length ≈ ${fmt(arc,3)}; sector area ≈ ${fmt(area,3)}.`,markscheme:`<p>Use \\(s=r\\theta\\) and \\(A=\\frac12r^2\\theta\\), where \\(\\theta\\) is in radians. ${code==='SL 3.4'?`First convert ${theta}° to ${fmt(rad,3)} radians.`:`Here \\(\\theta=${fmt(rad,3)}\\) radians.`}</p>`});
+  }
+  if(['AHL 3.9','AHL 3.10','AHL 3.11','AHL 3.12','AHL 3.13'].includes(code)){
+    const u=[randInt(rng,-4,5)||2,randInt(rng,-3,5)||3], v=[randInt(rng,-4,4)||1,randInt(rng,-5,5)||-2], k=randInt(rng,2,4); const dot=u[0]*v[0]+u[1]*v[1], magu=Math.hypot(...u), magv=Math.hypot(...v); const angle=Math.acos(Math.max(-1,Math.min(1,dot/(magu*magv))))*180/Math.PI; const svg=diagrams?axesSvg([[0,0],u,v],[{labels:['O','u','v']}][0]):'';
+    if(code==='AHL 3.9') return qObj({stem:`A matrix transformation maps a point in the plane.`,parts:[part(`Apply \\(A=\\begin{pmatrix}0&-1\\1&0\\end{pmatrix}\\) to \\(\\begin{pmatrix}${u[0]}\\${u[1]}\\end{pmatrix}\\).`,3),part(`Describe the transformation geometrically.`,2)],answer:`Image \\(\\begin{pmatrix}${-u[1]}\\${u[0]}\\end{pmatrix}\\); rotation 90° anticlockwise about the origin.`,markscheme:`<p>Matrix multiplication gives \\((0x-y, x+0y)^T=(-y,x)^T\\).</p>`});
+    if(code==='AHL 3.11') return qObj({stem:`A vector equation represents a line.`,parts:[part(`Write the vector equation of the line through \\(A(${u[0]},${u[1]})\\) with direction \\(\\begin{pmatrix}${v[0]}\\${v[1]}\\end{pmatrix}\\).`,3),part(`Find the point on the line when parameter \\(t=${k}\\).`,2)],svg,answer:`\\(\\mathbf r=\\begin{pmatrix}${u[0]}\\${u[1]}\\end{pmatrix}+t\\begin{pmatrix}${v[0]}\\${v[1]}\\end{pmatrix}\\); point \\((${u[0]+k*v[0]},${u[1]+k*v[1]})\\).`,markscheme:`<p>Use \\(\\mathbf r=\\mathbf a+t\\mathbf d\\). Substitute \\(t=${k}\\).</p>`});
+    if(code==='AHL 3.12') return qObj({stem:`A drone has position vector \\(\\mathbf r_0=\\begin{pmatrix}${u[0]}\\${u[1]}\\end{pmatrix}\\) km and velocity \\(\\mathbf v=\\begin{pmatrix}${v[0]}\\${v[1]}\\end{pmatrix}\\) km h\\(^{-1}\\).`,parts:[part(`Write an expression for \\(\\mathbf r(t)\\).`,2),part(`Find the position after ${k} hours.`,2),part(`Find the speed of the drone.`,2)],svg,answer:`\\(\\mathbf r(t)=\\mathbf r_0+t\\mathbf v\\); after ${k} h: \\((${u[0]+k*v[0]},${u[1]+k*v[1]})\\); speed \\(${fmt(magv,3)}\\).`,markscheme:`<p>Position after time \\(t\\): initial position plus time times velocity. Speed is magnitude of velocity.</p>`});
+    return qObj({stem:`Vectors \\(\\mathbf u=\\begin{pmatrix}${u[0]}\\${u[1]}\\end{pmatrix}\\) and \\(\\mathbf v=\\begin{pmatrix}${v[0]}\\${v[1]}\\end{pmatrix}\\) are shown.`,parts:[part(`Find \\(\\mathbf u+\\mathbf v\\).`,2),part(`Find \\(${k}\\mathbf u-\\mathbf v\\).`,2),part(`Find the angle between \\(\\mathbf u\\) and \\(\\mathbf v\\).`,4)],svg,answer:`\\(\\mathbf u+\\mathbf v=(${u[0]+v[0]},${u[1]+v[1]})\\); \\(${k}\\mathbf u-\\mathbf v=(${k*u[0]-v[0]},${k*u[1]-v[1]})\\); angle ≈ ${fmt(angle,2)}°.`,markscheme:`<p>Add/subtract components. For the angle use \\(\\mathbf u\\cdot\\mathbf v=|u||v|\\cos\\theta\\). Dot product \\(=${dot}\\).</p>`});
+  }
+  if(['AHL 3.14','AHL 3.15','AHL 3.16'].includes(code)){
+    const nodes=['A','B','C','D','E']; const edges=[['A','B',4],['A','C',7],['B','C',2],['B','D',5],['C','E',3],['D','E',6]]; const svg=diagrams?networkSvg(nodes,edges):'';
+    if(code==='AHL 3.15') return qObj({stem:`The graph has vertices A, B, C, D and E.`,parts:[part(`Write an adjacency matrix for the graph, using the order A, B, C, D, E.`,4),part(`Explain what an entry in \\(A^2\\) represents.`,2)],svg,answer:`Adjacency matrix has 1s for AB, AC, BC, BD, CE, DE and is symmetric. Entries of \\(A^2\\) count walks of length 2.`,markscheme:`<p>Award for correct order, symmetry, zero diagonal, and correct edge entries.</p>`});
+    if(code==='AHL 3.16') return qObj({stem:`A weighted network models cable lengths between buildings.`,parts:[part(`Use Kruskal's algorithm to find a minimum spanning tree.`,5),part(`Find the total length of your tree.`,2),part(`Explain why a cycle should be avoided.`,1)],svg,answer:`Choose edges BC(2), CE(3), AB(4), BD(5). Total 14.`,markscheme:`<p>Sort edges by weight and add the smallest edge that does not create a cycle until all vertices are connected. Total \\(2+3+4+5=14\\).</p>`});
+  }
+
+  // Topic 4: statistics and probability variants
+  if(['SL 4.1','SL 4.2','SL 4.3','AHL 4.12'].includes(code)){
+    const vals=Array.from({length:11},()=>randInt(rng,20,80)).sort((a,b)=>a-b); const m=mean(vals), med=median(vals), q1=median(vals.slice(0,5)), q3=median(vals.slice(6)); const svg=diagrams?boxplotSvg(vals):''; const table=tableHtml(['Data'],[vals]);
+    const prompt=code==='SL 4.1'||code==='AHL 4.12'?`Identify a suitable sampling method for collecting data on ${ctx}, and describe one possible source of bias.`:`For the data ${table} find the median, quartiles and interquartile range.`;
+    return qObj({stem:`A ${ctx} investigation produces data.`,parts:[part(prompt,4),part(`Calculate the mean and median for the given data where possible.`,3),part(`Comment on whether the mean or median is more appropriate if an outlier is present.`,2)],svg,answer:`Mean ≈ ${fmt(m,2)}, median ${fmt(med)}, Q1 ${fmt(q1)}, Q3 ${fmt(q3)}, IQR ${fmt(q3-q1)}.`,markscheme:`<p>Sort data. Median is the middle value; quartiles split the lower and upper halves. Mean is total divided by number of values. Bias comments should be specific to the sampling method.</p>`});
+  }
+  if(code==='SL 4.10'){
+    const x=[1,2,3,4,5,6], y=shuffle(rng,[1,2,3,4,5,6]); const d2=sum(x.map((v,i)=>(v-y[i])**2)); const rs=1-6*d2/(x.length*(x.length*x.length-1));
+    return qObj({stem:`Six students rank the usefulness of two revision resources.`,parts:[part(`The ranks for resource A are ${x.join(', ')} and for resource B are ${y.join(', ')}. Calculate Spearman's rank correlation coefficient.`,4),part(`Interpret the result in context.`,2)],answer:`\\(r_s=${fmt(rs,3)}\\).`,markscheme:`<p>Use \\(r_s=1-\\frac{6\\sum d^2}{n(n^2-1)}\\). Here \\(\\sum d^2=${d2}\\), \\(n=6\\), so \\(r_s=${fmt(rs,3)}\\). Interpret sign and strength.</p>`});
+  }
+  if(['AHL 4.14','AHL 4.15','AHL 4.16','AHL 4.18'].includes(code)){
+    if(code==='AHL 4.16' || code==='AHL 4.18'){
+      const n=randInt(rng,25,60), xbar=randInt(rng,48,72), s=randInt(rng,6,14), mu0=xbar-randInt(rng,2,6); const se=s/Math.sqrt(n); const ci=[xbar-1.96*se,xbar+1.96*se]; const t=(xbar-mu0)/se;
+      return qObj({stem:`A sample is used to estimate or test a population mean.`,parts:[part(`For \\(n=${n}\\), \\(\\bar x=${xbar}\\), and \\(s=${s}\\), find a 95% confidence interval for the mean.`,4),part(`Test \\(H_0:\\mu=${mu0}\\) against \\(H_1:\\mu>${mu0}\\) using a t statistic.`,4),part(`State a conclusion in context.`,2)],answer:`95% CI ≈ \\((${fmt(ci[0],2)}, ${fmt(ci[1],2)})\\); \\(t≈${fmt(t,3)}\\).`,markscheme:`<p>Use \\(\\bar x\\pm 1.96\\frac{s}{\\sqrt n}\\) as a technology-supported approximation. \\(t=\\frac{\\bar x-\\mu_0}{s/\\sqrt n}\\). Conclusion should compare p-value/critical value and refer to context.</p>`});
+    }
+    const a=randInt(rng,2,5), b=randInt(rng,-10,10), mu=randInt(rng,30,70), sg=randInt(rng,4,12); const newMu=a*mu+b, newSg=Math.abs(a)*sg;
+    return qObj({stem:`A random variable \\(X\\) has mean ${mu} and standard deviation ${sg}.`,parts:[part(`Find the mean and standard deviation of \\(Y=${a}X${pm(b)}\\).`,3),part(`If \\(X\\) is normally distributed, state the distribution of \\(Y\\).`,2),part(`Explain why standard deviation is multiplied by \\(|a|\\), not affected by ${b}.`,2)],answer:`\\(E(Y)=${newMu}\\), \\(\\sigma_Y=${newSg}\\); \\(Y\\sim N(${newMu},${newSg}^2)\\).`,markscheme:`<p>For \\(Y=aX+b\\), \\(E(Y)=aE(X)+b\\), \\(SD(Y)=|a|SD(X)\\).</p>`});
+  }
+
+  // Topic 5: calculus variants
+  if(['SL 5.1','SL 5.2','SL 5.3','SL 5.4','SL 5.5','AHL 5.9','AHL 5.11','AHL 5.12','AHL 5.13'].includes(code)){
+    const a=randInt(rng,1,4), b=randInt(rng,-5,5)||2, c=randInt(rng,-6,8), x0=randInt(rng,1,4); const f=x=>a*x*x+b*x+c; const der=2*a*x0+b; let pts=[]; for(let x=-4;x<=6;x++) pts.push([x,f(x)]); const svg=diagrams?axesSvg(pts):'';
+    if(code==='SL 5.1') return qObj({stem:`The graph suggests the value of a limit.`,parts:[part(`Use the graph/table idea to estimate \\(\\lim_{x\\to ${x0}}(${a}x^2${pm(b)}x${pm(c)})\\).`,2),part(`Explain why this limit exists.`,2)],svg,answer:`Limit \\(${f(x0)}\\).`,markscheme:`<p>For a polynomial, substitute directly: \\(${a}(${x0})^2${pm(b)}(${x0})${pm(c)}=${f(x0)}\\).</p>`});
+    if(code==='SL 5.2') return qObj({stem:`The derivative sign is used to describe movement on a graph.`,parts:[part(`For \\(f(x)=${a}x^2${pm(b)}x${pm(c)}\\), find \\(f'(x)\\).`,2),part(`Find where the function is increasing.`,3),part(`Classify the stationary point.`,2)],svg,answer:`\\(f'(x)=${2*a}x${pm(b)}\\). Increasing for \\(x>${fmt(-b/(2*a),3)}\\); stationary point is a minimum.`,markscheme:`<p>Set \\(f'(x)>0\\). Since coefficient of \\(x^2\\) is positive, the stationary point is a minimum.</p>`});
+    if(code==='SL 5.5'||code==='AHL 5.11'||code==='AHL 5.12'){
+      const u=randInt(rng,0,2), v=u+randInt(rng,2,5); const area=(a/3)*(v**3-u**3)+(b/2)*(v**2-u**2)+c*(v-u); const vol=Math.PI*((a*a/5)*(v**5-u**5)+(2*a*b/4)*(v**4-u**4)+((b*b+2*a*c)/3)*(v**3-u**3)+(2*b*c/2)*(v**2-u**2)+c*c*(v-u));
+      const parts=code==='AHL 5.12'?[part(`Find the volume generated when \\(y=${a}x^2${pm(b)}x${pm(c)}\\) is rotated about the x-axis from \\(x=${u}\\) to \\(x=${v}\\).`,5),part(`State the formula used.`,1)]:[part(`Find \\(\\int(${a}x^2${pm(b)}x${pm(c)})dx\\).`,3),part(`Find \\(\\int_${u}^{${v}}(${a}x^2${pm(b)}x${pm(c)})dx\\).`,3)];
+      return qObj({stem:`Integration is used to accumulate a changing quantity.`,parts,svg,answer:`Area integral ≈ ${fmt(area,3)}; volume ≈ ${fmt(vol,3)} if rotated.`,markscheme:`<p>Antiderivative: \\(\\frac{${a}}3x^3${pm(round(b/2,3))}x^2${pm(c)}x+C\\). Definite integral is \\(F(${v})-F(${u})=${fmt(area,3)}\\). Volume uses \\(V=\\pi\\int_a^b y^2\\,dx\\).</p>`});
+    }
+    if(code==='AHL 5.13') return qObj({stem:`A particle has velocity \\(v(t)=${a}t^2${pm(b)}t${pm(c)}\\) m s\\(^{-1}\\).`,parts:[part(`Find the acceleration at \\(t=${x0}\\).`,3),part(`Find the displacement from \\(t=0\\) to \\(t=${x0}\\).`,3)],answer:`Acceleration \\(${der}\\) m s\\(^{-2}\\); displacement \\(${fmt((a/3)*x0**3+(b/2)*x0**2+c*x0,3)}\\) m.`,markscheme:`<p>Acceleration is \\(v'(t)\\). Displacement is \\(\\int v(t)dt\\) over the time interval.</p>`});
+    return qObj({stem:`A curve is defined by \\(f(x)=${a}x^2${pm(b)}x${pm(c)}\\).`,parts:[part(`Find \\(f'(x)\\).`,2),part(`Find the gradient at \\(x=${x0}\\).`,2),part(`Find the equation of the tangent at \\(x=${x0}\\).`,3)],svg,answer:`\\(f'(x)=${2*a}x${pm(b)}\\), gradient \\(${der}\\), tangent \\(y-${f(x0)}=${der}(x-${x0})\\).`,markscheme:`<p>Differentiate term by term. At \\(x=${x0}\\), point is \\((${x0},${f(x0)})\\) and gradient is ${der}. Use point-gradient form.</p>`});
+  }
+  if(['AHL 5.14','AHL 5.15','AHL 5.16','AHL 5.17','AHL 5.18'].includes(code)){
+    const a=randInt(rng,1,3), b=randInt(rng,-2,2)||1, y0=randInt(rng,1,5), h=0.2, steps=randInt(rng,3,5); let x=0,y=y0; for(let i=0;i<steps;i++){y=y+h*(a*x+b*y); x+=h;} const svg=diagrams?slopeFieldSvg(a,b):'';
+    const extra=code==='AHL 5.17'||code==='AHL 5.18'?part(`Describe how a phase portrait would show the behaviour of a two-variable system.`,3):part(`Interpret what the slope field suggests near \\((0,${y0})\\).`,2);
+    return qObj({stem:`A differential equation model is \\(\\frac{dy}{dx}=${a}x${pm(b)}y\\), with \\(y(0)=${y0}\\).`,parts:[part(`Use Euler's method with step size ${h} for ${steps} steps.`,5),extra],svg,answer:`After ${steps} steps, \\(x=${fmt(x,1)}\\), \\(y≈${fmt(y,4)}\\).`,markscheme:`<p>Use \\(y_{n+1}=y_n+h f(x_n,y_n)\\). Repeat with \\(f(x,y)=${a}x${pm(b)}y\\). Final estimate \\(y≈${fmt(y,4)}\\).</p><p>Slope/phase interpretation should connect the visual field to solution behaviour.</p>`});
+  }
+  return null;
+}
+
+
+function extraQuestion(sp,style,rng,diff,diagrams){
+  const ctx=richContext(rng);
+  if(sp.gen==='line'){
+    const m=choice(rng,[-3,-2,-1,1,2,3]); const c=randInt(rng,-6,6); const x0=randInt(rng,-3,5); const y0=m*x0+c; const mp=-1/m;
+    const svg=diagrams?axesSvg([[0,c],[x0,y0],[x0+2,y0+mp*2]],{labels:['intercept','P','Q']}):'';
+    const parts=style==='p2'?[part(`A road is modelled by the line \\(y=${m}x${pm(c)}\\). A new path must be perpendicular to this road and pass through \\(P(${x0},${y0})\\). Find the gradient of the new path.`,2),part(`Find the equation of the new path.`,3),part(`Find the point where the new path crosses the y-axis.`,2)]:[part(`Find the equation of the line perpendicular to \\(y=${m}x${pm(c)}\\) through \\(P(${x0},${y0})\\).`,4)];
+    return qObj({stem:`A coordinate geometry model is used for ${ctx}.`,parts,svg,answer:`Perpendicular gradient \\(${fmt(mp,3)}\\); line \\(y-${y0}=${fmt(mp,3)}(x-${x0})\\).`,markscheme:`<p>Perpendicular gradients multiply to \\(-1\\), so \\(m_\\perp=-1/${m}=${fmt(mp,3)}\\). Use point-gradient form through \\(P(${x0},${y0})\\).</p>`});
+  }
+  if(sp.gen==='probability'){
+    const total=randInt(rng,80,160), a=randInt(rng,35,80), b=randInt(rng,30,75), inter=randInt(rng,10,Math.min(a,b)-5); const union=a+b-inter; const cond=inter/b; const svg=diagrams?vennSvg(a,b,inter,total):'';
+    const parts=style==='p2'?[part(`In a survey of ${total} students, ${a} study Art, ${b} study Biology, and ${inter} study both. Complete or interpret the Venn diagram.`,3),part(`Find the probability that a randomly selected student studies Art or Biology.`,2),part(`Find \\(P(\\text{Art}\\mid\\text{Biology})\\).`,3),part(`Decide whether the events appear independent.`,2)]:[part(`For the survey data, find \\(P(A\\cup B)\\) and \\(P(A\\mid B)\\).`,5)];
+    return qObj({stem:`A Venn diagram models subject choices.`,parts,svg,answer:`\\(P(A\\cup B)=${fmt(union/total,3)}\\), \\(P(A\\mid B)=${fmt(cond,3)}\\).`,markscheme:`<p>Use \\(n(A\\cup B)=n(A)+n(B)-n(A\\cap B)=${a}+${b}-${inter}=${union}\\).</p><p>\\(P(A\\mid B)=\\frac{n(A\\cap B)}{n(B)}=\\frac{${inter}}{${b}}=${fmt(cond,3)}\\).</p>`});
+  }
+  if(sp.gen==='data'){
+    const base=randInt(rng,20,50); const vals=Array.from({length:9},(_,i)=>base+randInt(rng,-8,12)).sort((a,b)=>a-b); const out=vals[8]+randInt(rng,25,45); const withOut=[...vals,out]; const mean1=mean(vals), mean2=mean(withOut), med1=median(vals), med2=median(withOut); const table=tableHtml(['Original data'],[vals]);
+    const parts=style==='p2'?[part(`The original data are ${table}. Find the mean and median.`,3),part(`An extra value ${out} is added. Find the new mean and median.`,3),part(`Explain which average is more resistant to the extra value.`,2)]:[part(`Find the mean and median before and after adding ${out} to the data ${vals.join(', ')}.`,5)];
+    return qObj({stem:`A data set from ${ctx} is checked for the effect of an outlier.`,parts,answer:`Original mean ${fmt(mean1,2)}, median ${fmt(med1,2)}. New mean ${fmt(mean2,2)}, median ${fmt(med2,2)}.`,markscheme:`<p>Mean is total divided by number of values. Median is the middle value after sorting. The mean changes more because the extra value is large; the median is more resistant.</p>`});
+  }
+  if(sp.gen==='distribution'){
+    const mu=randInt(rng,60,90), sg=randInt(rng,6,15), prob=choice(rng,[0.1,0.15,0.2,0.8,0.85,0.9]);
+    const zTable={0.1:-1.282,0.15:-1.036,0.2:-0.842,0.8:0.842,0.85:1.036,0.9:1.282}; const z=zTable[prob]; const x=mu+z*sg; const svg=diagrams?normalSvg(mu,sg,round(x,1)):'';
+    const parts=style==='p2'?[part(`Let \\(X\\sim N(${mu},${sg}^2)\\). Find the value of \\(x\\) such that \\(P(X<x)=${prob}\\).`,4),part(`Interpret this value in context.`,2),part(`Explain why technology or an inverse normal command is appropriate.`,1)]:[part(`Find \\(x\\) if \\(X\\sim N(${mu},${sg}^2)\\) and \\(P(X<x)=${prob}\\).`,4)];
+    return qObj({stem:`An inverse normal calculation is used for ${ctx}.`,parts,svg,answer:`\\(x\\approx ${fmt(x,2)}\\).`,markscheme:`<p>Use inverse normal: \\(z\\approx ${z}\\). Then \\(x=\\mu+z\\sigma=${mu}+(${z})(${sg})=${fmt(x,2)}\\).</p>`});
+  }
+  if(sp.gen==='calculus' || sp.gen==='optimisation'){
+    const r=randInt(rng,2,8); const h=randInt(rng,6,16); const dVdr=2*Math.PI*r*h; const dVdh=Math.PI*r*r;
+    const parts=style==='p2'?[part(`The volume of a cylinder is \\(V=\\pi r^2h\\). Find \\(\\frac{\\partial V}{\\partial r}\\) and \\(\\frac{\\partial V}{\\partial h}\\).`,4),part(`Evaluate both rates when \\(r=${r}\\) and \\(h=${h}\\).`,3),part(`Interpret which dimension has the larger immediate effect on volume.`,2)]:[part(`For \\(V=\\pi r^2h\\), find the rate of change with respect to \\(r\\) when \\(r=${r}, h=${h}\\).`,3)];
+    return qObj({stem:`A calculus model is used to analyse a container.`,parts,answer:`\\(\\frac{\\partial V}{\\partial r}=2\\pi rh\\approx ${fmt(dVdr,2)}\\), \\(\\frac{\\partial V}{\\partial h}=\\pi r^2\\approx ${fmt(dVdh,2)}\\).`,markscheme:`<p>Treat the other variable as constant. Differentiate \\(V=\\pi r^2h\\) with respect to \\(r\\) and with respect to \\(h\\), then substitute.</p>`});
+  }
+  if(sp.gen==='graphTheory'){
+    const nodes=['A','B','C','D','E','F']; const edges=[['A','B',3],['A','D',5],['B','C',4],['B','D',2],['C','E',6],['D','E',3],['E','F',4],['C','F',7]]; const svg=diagrams?networkSvg(nodes,edges):'';
+    const parts=style==='p2'?[part(`For the network, list the degree of each vertex.`,3),part(`Determine whether an Eulerian trail is possible. Justify your answer.`,3),part(`Suggest one real-world meaning of the edge weights.`,1)]:[part(`Use vertex degrees to decide whether the network has an Eulerian trail.`,4)];
+    return qObj({stem:`A graph theory model represents paths around a campus.`,parts,svg,answer:`Degrees: A 2, B 3, C 3, D 3, E 3, F 2. Four odd vertices, so no Eulerian trail.`,markscheme:`<p>Count the number of edges meeting each vertex. An Eulerian trail exists only when exactly 0 or 2 vertices have odd degree. Here there are four odd vertices, so it is not possible.</p>`});
+  }
+  return null;
+}
+
+function paper3Question(sp,rng,diff,diagrams){
+  const base=extraQuestion(sp,'p2',rng,diff,diagrams) || bespokeQuestion(sp,'p2',rng,diff,diagrams) || (GENERATORS[sp.gen]||GENERATORS.modelling)(sp,'p2',rng,diff,diagrams);
+  const ctx=richContext(rng); const hint=document.getElementById('paperHint')?.value || 'use technology where appropriate';
+  const extra=[
+    part(`A second student proposes a different model or method for the same ${ctx} situation. Define any variables you would use and outline a complete strategy.`,3),
+    part(`Use your earlier result to make a prediction or decision, then test how your answer changes if one input is increased by 10%.`,4),
+    part(`Evaluate the reasonableness of the model. Refer to assumptions, possible errors, and whether ${hint}.`,4)
+  ];
+  const q=qObj({stem:`Paper 3 style investigation — ${sp.label}. ${base.stem}`,parts:[...base.parts,...extra],svg:base.svg,answer:`Earlier numerical results: ${base.answer} Additional Paper 3 marks are for a coherent strategy, sensitivity check, and evaluation in context.`,markscheme:openMarkingNotes(base,`For the 10% sensitivity part, accept any consistent recalculation using the student's defined input. For the evaluation, require at least two precise comments linked to the context.`)});
+  q.paper3=true; return q;
+}
+
+function makeQuestion(sp, style, rng, diff, diagrams){
+  let q;
+  if(style==='p3') q=paper3Question(sp,rng,diff,diagrams);
+  else q=(rng()<0.35?extraQuestion(sp,style,rng,diff,diagrams):null) || bespokeQuestion(sp,style,rng,diff,diagrams) || extraQuestion(sp,style,rng,diff,diagrams) || (GENERATORS[sp.gen]||GENERATORS.modelling)(sp, style, rng, diff, diagrams);
+  return addMeta(q,sp,style,rng);
+}
+function visibleSyllabus(){
+  const q=document.getElementById('search').value.trim().toLowerCase(); const level=document.getElementById('levelFilter').value;
+  return SYLLABUS.filter(sp => (level==='all'||sp.level.toLowerCase()===level) && (!q || `${sp.code} ${sp.label} ${TOPICS.find(t=>t.id===sp.topic).title}`.toLowerCase().includes(q)) );
+}
+function renderSyllabus(){
+  const list=document.getElementById('syllabusList'); const visible=visibleSyllabus();
+  list.innerHTML=TOPICS.map(t=>{
+    const items=visible.filter(sp=>sp.topic===t.id); if(!items.length) return '';
+    const rows=items.map(sp=>`<label class="syll-row"><input type="checkbox" class="syllCheck" value="${sp.code}" ${selected.has(sp.code)?'checked':''}/><span class="code">${sp.code}</span><span>${sp.label}</span><span class="tag ${sp.level==='AHL'?'ahl':''}">${sp.level}</span></label>`).join('');
+    return `<details class="topic" open><summary><span>${t.title}</span><button type="button" class="topicSelect" data-topic="${t.id}">Select</button></summary><div class="inside">${rows}</div></details>`;
+  }).join('') || `<div class="empty">No matching syllabus points.</div>`;
+  list.querySelectorAll('.syllCheck').forEach(cb=>cb.addEventListener('change',()=>{cb.checked?selected.add(cb.value):selected.delete(cb.value); updateCount();}));
+  list.querySelectorAll('.topicSelect').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault(); visible.filter(sp=>sp.topic===btn.dataset.topic).forEach(sp=>selected.add(sp.code)); renderSyllabus(); updateCount();}));
+  updateCount();
+}
+function renderQuickFilters(){
+  const bar=document.getElementById('quickFilters');
+  bar.innerHTML=[['all','All'],['t1','Topic 1'],['t2','Topic 2'],['t3','Topic 3'],['t4','Topic 4'],['t5','Topic 5'],['sl','SL'],['ahl','AHL']].map(([id,label])=>`<button class="pill" data-filter="${id}">${label}</button>`).join('');
+  bar.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
+    const f=btn.dataset.filter; if(f==='all'){selected=new Set(SYLLABUS.map(s=>s.code));}
+    else if(f==='sl'||f==='ahl'){SYLLABUS.filter(s=>s.level.toLowerCase()===f).forEach(s=>selected.add(s.code));}
+    else {SYLLABUS.filter(s=>s.topic===f).forEach(s=>selected.add(s.code));}
+    renderSyllabus();
+  }));
+}
+function updateCount(){document.getElementById('selectedCount').textContent=selected.size;}
+function selectedSyllabus(){return SYLLABUS.filter(sp=>selected.has(sp.code));}
+function buildQuestions(pool, style, qCount, rng, diff, diagrams){
+  let choices=shuffle(rng,[...pool]);
+  const questions=[]; const usedGen=new Set();
+  const ahlPool=choices.filter(sp=>sp.level==='AHL');
+  if(style==='p3') choices=ahlPool.length?ahlPool:SYLLABUS.filter(sp=>sp.level==='AHL');
+  for(let i=0;i<qCount;i++){
+    let sp=choices[i%choices.length];
+    if(document.getElementById('avoidRepeat')?.checked && choices.length>1){
+      const candidate=choices.find(c=>!usedGen.has(c.gen)) || sp;
+      sp=candidate; usedGen.add(sp.gen); choices=choices.filter(c=>c.code!==sp.code).concat(sp);
+    }
+    let qStyle=style;
+    if(style==='mixed'){
+      const pattern=['p1','p1','p2','p1','p2','p1','p3'];
+      qStyle=pattern[i%pattern.length];
+      if(qStyle==='p3'){
+        const nextAhl=choices.find(c=>c.level==='AHL') || ahlPool[0];
+        if(nextAhl){sp=nextAhl;} else {qStyle='p2';}
+      }
+    }
+    if(qStyle==='p3' && sp.level!=='AHL'){
+      const nextAhl=choices.find(c=>c.level==='AHL') || SYLLABUS.find(c=>c.level==='AHL');
+      if(nextAhl) sp=nextAhl;
+    }
+    questions.push(makeQuestion(sp,qStyle,rng,diff,diagrams));
+  }
+  return questions;
+}
+function generate(){
+  let choices=selectedSyllabus(); if(!choices.length){choices=visibleSyllabus(); choices.slice(0,12).forEach(sp=>selected.add(sp.code)); renderSyllabus();}
+  const qCount=Math.max(1,Math.min(80,parseInt(document.getElementById('qCount').value)||12));
+  const diff=parseInt(document.getElementById('difficulty').value)||2; const diagrams=document.getElementById('includeDiagrams').checked;
+  const style=document.getElementById('paperStyle').value; const seed=document.getElementById('seed').value || String(Date.now()); const rng=mulberry32(hashSeed(seed));
+  if(style==='p3'){
+    choices=choices.filter(sp=>sp.level==='AHL');
+    if(!choices.length) choices=SYLLABUS.filter(sp=>sp.level==='AHL');
+  }
+  const questions=buildQuestions(choices,style,qCount,rng,diff,diagrams);
+  lastPaper={title:document.getElementById('paperTitle').value||'DP AI Practice Test',seed,created:new Date().toLocaleString(),questions};
+  renderPaper(lastPaper); renderMarkscheme(lastPaper); renderJson(lastPaper); renderHelp();
+  document.getElementById('summaryLine').textContent=`${questions.length} questions · ${sum(questions.map(q=>q.marks))} marks · seed ${seed}${style==='p3'?' · HL Paper 3 only':''}`;
+  if(window.MathJax?.typesetPromise) MathJax.typesetPromise();
+}
+function generateFullPack(){
+  const seed='PACK-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  document.getElementById('seed').value=seed;
+  const rng=mulberry32(hashSeed(seed));
+  const diff=parseInt(document.getElementById('difficulty').value)||2;
+  const diagrams=document.getElementById('includeDiagrams').checked;
+  const sl=SYLLABUS.filter(sp=>sp.level==='SL');
+  const hl=SYLLABUS.filter(sp=>sp.level==='SL' || sp.level==='AHL');
+  const ahl=SYLLABUS.filter(sp=>sp.level==='AHL');
+  const sections=[
+    {title:'AI SL Paper 1 style pack', course:'AI SL', style:'p1', questions:buildQuestions(sl,'p1',18,rng,diff,diagrams)},
+    {title:'AI SL Paper 2 style pack', course:'AI SL', style:'p2', questions:buildQuestions(sl,'p2',10,rng,diff,diagrams)},
+    {title:'AI HL Paper 1 style pack', course:'AI HL', style:'p1', questions:buildQuestions(hl,'p1',20,rng,diff,diagrams)},
+    {title:'AI HL Paper 2 style pack', course:'AI HL', style:'p2', questions:buildQuestions(hl,'p2',12,rng,diff,diagrams)},
+    {title:'AI HL Paper 3 style pack', course:'AI HL', style:'p3', questions:buildQuestions(ahl,'p3',2,rng,diff,diagrams)}
+  ];
+  lastPaper={title:'Random IB Mathematics AI SL/HL Question Pack',seed,created:new Date().toLocaleString(),sections};
+  renderPaper(lastPaper); renderMarkscheme(lastPaper); renderJson(lastPaper); renderHelp();
+  const totalQ=sum(sections.map(s=>s.questions.length)); const totalM=sum(sections.flatMap(s=>s.questions).map(q=>q.marks));
+  document.getElementById('summaryLine').textContent=`Full random pack · ${sections.length} papers · ${totalQ} questions · ${totalM} marks · seed ${seed} · no SL Paper 3`;
+  switchTab('paperPane');
+  if(window.MathJax?.typesetPromise) MathJax.typesetPromise();
+}
+function answerSpaceHtml(pt){
+  const include=document.getElementById('includeSpace')?.checked;
+  if(!include) return '';
+  const density=parseInt(document.getElementById('spaceLines')?.value||'2');
+  const lines=Math.max(3, Math.min(30, pt.marks*density + 1));
+  return `<div class="answer-space" style="--lines:${lines}"></div>`;
+}
+function renderPartsWithSpace(q){
+  return `<ol class="parts" type="a">${q.parts.map(pt=>`<li>${pt.text} <span class="marks">${marksText(pt.marks)}</span>${answerSpaceHtml(pt)}</li>`).join('')}</ol>`;
+}
+function paperInstructionFor(sectionOrPaper){
+  const hasP3=(sectionOrPaper.questions||[]).some(q=>q.paper3);
+  return `Answer all questions. Technology is permitted where appropriate. Show enough working to justify your answers.${hasP3?' Paper 3 questions are HL-style extended problem-solving questions.':''}`;
+}
+function renderQuestionSection(section, offset=0){
+  const total=sum(section.questions.map(q=>q.marks));
+  return `<section class="paper-section"><h2 class="section-title">${esc(section.title||'Question paper')}</h2><div class="section-note">${esc(section.course||'Mathematics AI')} · ${section.questions.length} questions · ${total} marks</div><p><strong>Instructions:</strong> ${paperInstructionFor(section)}</p>${section.questions.map((q,i)=>`<section class="question"><div class="qhead"><div><div class="qtitle">Question ${offset+i+1}</div><div class="small">${q.syllabus} · ${esc(q.label)} · ${q.paperStyle}</div></div><div class="marks">${marksText(q.marks)}</div></div><p>${q.stem}</p>${q.svg?`<div class="diagram">${q.svg}</div>`:''}${renderPartsWithSpace(q)}</section>`).join('')}</section>`;
+}
+function renderPaper(paper){
+  if(paper.sections){
+    const all=paper.sections.flatMap(s=>s.questions); const total=sum(all.map(q=>q.marks));
+    document.getElementById('paperPane').innerHTML=`<article class="paper"><h1>${esc(paper.title)}</h1><div class="small">Question Pack · generated ${esc(paper.created)}</div><div class="paper-meta"><div class="meta-box"><strong>Course</strong><br>AI SL and AI HL</div><div class="meta-box"><strong>Contents</strong><br>SL P1, SL P2, HL P1, HL P2, HL P3</div><div class="meta-box"><strong>Total marks</strong><br>${total}</div><div class="meta-box"><strong>Seed</strong><br>${esc(paper.seed)}</div></div><p><strong>Note:</strong> This pack deliberately has no SL Paper 3. Paper 3 appears only in the HL section.</p>${paper.sections.map((s,idx)=>renderQuestionSection(s,0)).join('')}</article>`;
+    return;
+  }
+  const total=sum(paper.questions.map(q=>q.marks));
+  document.getElementById('paperPane').innerHTML=`<article class="paper"><h1>${esc(paper.title)}</h1><div class="small">Question Paper · generated ${esc(paper.created)}</div><div class="paper-meta"><div class="meta-box"><strong>Course</strong><br>Mathematics AI</div><div class="meta-box"><strong>Style</strong><br>${esc(document.getElementById('paperStyle').selectedOptions[0].textContent)}</div><div class="meta-box"><strong>Total marks</strong><br>${total}</div><div class="meta-box"><strong>Seed</strong><br>${esc(paper.seed)}</div></div><p><strong>Instructions:</strong> ${paperInstructionFor(paper)}</p>${paper.questions.map((q,i)=>`<section class="question"><div class="qhead"><div><div class="qtitle">Question ${i+1}</div><div class="small">${q.syllabus} · ${esc(q.label)} · ${q.paperStyle}</div></div><div class="marks">${marksText(q.marks)}</div></div><p>${q.stem}</p>${q.svg?`<div class="diagram">${q.svg}</div>`:''}${renderPartsWithSpace(q)}</section>`).join('')}</article>`;
+}
+
+function renderMarkschemeSection(section, offset=0){
+  return `<section class="paper-section"><h2 class="section-title">${esc(section.title||'Markscheme')}</h2>${section.questions.map((q,i)=>`<section class="question"><div class="qhead"><div><div class="qtitle">Question ${offset+i+1}: ${q.syllabus}</div><div class="small">${esc(q.label)} · ${q.paperStyle}</div></div><div class="marks">${marksText(q.marks)}</div></div><div class="ms-step"><h4>Expected answer</h4><p>${q.answer}</p><div class="markline"><span>Working and method</span><strong>${q.marks} marks</strong></div>${q.markscheme}</div></section>`).join('')}</section>`;
+}
+function renderMarkscheme(paper){
+  if(paper.sections){
+    const all=paper.sections.flatMap(s=>s.questions); const total=sum(all.map(q=>q.marks));
+    document.getElementById('markschemePane').innerHTML=`<article class="paper"><h1>${esc(paper.title)} — Markscheme</h1><div class="paper-meta"><div class="meta-box"><strong>Total marks</strong><br>${total}</div><div class="meta-box"><strong>Seed</strong><br>${esc(paper.seed)}</div><div class="meta-box"><strong>Generated</strong><br>${esc(paper.created)}</div><div class="meta-box"><strong>Note</strong><br>No SL Paper 3</div></div>${paper.sections.map((s,idx)=>renderMarkschemeSection(s,0)).join('')}</article>`;
+    return;
+  }
+  const total=sum(paper.questions.map(q=>q.marks));
+  document.getElementById('markschemePane').innerHTML=`<article class="paper"><h1>${esc(paper.title)} — Markscheme</h1><div class="paper-meta"><div class="meta-box"><strong>Total marks</strong><br>${total}</div><div class="meta-box"><strong>Seed</strong><br>${esc(paper.seed)}</div><div class="meta-box"><strong>Generated</strong><br>${esc(paper.created)}</div><div class="meta-box"><strong>Note</strong><br>Teacher-editable</div></div>${paper.questions.map((q,i)=>`<section class="question"><div class="qhead"><div><div class="qtitle">Question ${i+1}: ${q.syllabus}</div><div class="small">${esc(q.label)} · ${q.paperStyle}</div></div><div class="marks">${marksText(q.marks)}</div></div><div class="ms-step"><h4>Expected answer</h4><p>${q.answer}</p><div class="markline"><span>Working and method</span><strong>${q.marks} marks</strong></div>${q.markscheme}</div></section>`).join('')}</article>`;
+}
+function renderJson(paper){
+  document.getElementById('jsonPane').innerHTML=`<div class="jsonbox">${esc(JSON.stringify(paper,null,2))}</div>`;
+}
+function renderHelp(){
+  document.getElementById('helpPane').innerHTML=`<div class="help-grid"><div class="help-card"><h3>How to add more question types</h3><p>Add a new function to <code>GENERATORS</code>, then point any syllabus item in <code>SYLLABUS</code> to that generator key. Each generator returns <code>stem</code>, <code>parts</code>, <code>answer</code>, <code>markscheme</code> and optional <code>svg</code>.</p></div><div class="help-card"><h3>Deploy on GitHub Pages</h3><p>Save this file as <code>questionbank.html</code> in your <code>DP_Apps</code> repository and link to it from <code>index.html</code>. It uses browser JavaScript only, so no backend is needed.</p></div><div class="help-card"><h3>Question style</h3><p>Paper 1 mode uses shorter subquestions. Paper 2 mode generates extended contextual questions. Paper 3 mode creates longer HL problem-solving investigations. The random pack includes HL Paper 3 only; there is no SL Paper 3.</p></div><div class="help-card"><h3>Diagrams</h3><p>Diagrams are inline SVG: coordinate graphs, scatter plots, tree diagrams, Venn diagrams, boxplots, networks, trigonometry sketches, normal curves and slope fields.</p></div></div>`;
+}
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+  document.querySelectorAll('.tabpane').forEach(p=>{p.hidden=p.id!==id; p.classList.toggle('printme',p.id===id);});
+  if(window.MathJax?.typesetPromise) MathJax.typesetPromise();
+}
+async function copyCurrent(){
+  const pane=[...document.querySelectorAll('.tabpane')].find(p=>!p.hidden); const text=pane?.innerText || '';
+  try{await navigator.clipboard.writeText(text); alert('Copied current tab text.');}catch(e){alert('Copy failed. Select the text and copy manually.');}
+}
+let selected = new Set(['SL 1.1','SL 2.1','SL 2.4','SL 3.2','SL 4.6','SL 4.9','SL 5.4','SL 5.8']);
+let lastPaper=null;
+document.getElementById('generateBtn').addEventListener('click',generate);
+document.getElementById('fullPackBtn').addEventListener('click',generateFullPack);
+document.getElementById('randomSeedBtn').addEventListener('click',()=>{document.getElementById('seed').value='AI-'+Math.random().toString(36).slice(2,8).toUpperCase(); generate();});
+document.getElementById('clearBtn').addEventListener('click',()=>{selected.clear(); renderSyllabus();});
+document.getElementById('selectVisibleBtn').addEventListener('click',()=>{visibleSyllabus().forEach(sp=>selected.add(sp.code)); renderSyllabus();});
+document.getElementById('search').addEventListener('input',renderSyllabus);
+document.getElementById('levelFilter').addEventListener('change',renderSyllabus);
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+document.getElementById('copyBtn').addEventListener('click',copyCurrent);
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>switchTab(tab.dataset.tab)));
+renderQuickFilters(); renderSyllabus(); renderHelp(); generate();
+</script>
+</body>
+</html>
