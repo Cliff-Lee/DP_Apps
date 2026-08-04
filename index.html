@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -1738,11 +1739,15 @@
       selectedPanel.querySelectorAll("[data-open-selected]").forEach((link) => {
         link.addEventListener("click", async (event) => {
           event.preventDefault();
+          const destination = link.href;
           completed.add(island.id);
           saveProgress();
           updateProgress();
-          await logProgress(island.id, "opened");
-          window.location.href = event.currentTarget.href;
+          try {
+            await logProgress(island.id, "opened");
+          } finally {
+            window.location.href = destination;
+          }
         });
       });
     }
